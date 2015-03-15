@@ -51,9 +51,9 @@ echo
 route -n -A inet | grep UG
 echo
 echo
-echo "Entrez l'IP connectée au réseau, listée ci-dessus :"
+echo "Entrez l'IP connectée à un réseau, listée ci-dessus :"
 read -e gatewayip
-echo -n "Entrez l'interface connectée au réseau, listée ci-dessus. Sélectionnez l'interface associé à l'IP précédemment choisie : "
+echo -n "Entrez l'interface connectée à un réseau, listée ci-dessus. Sélectionnez l'interface associée à l'IP précédemment choisie : "
 read -e internet_interface
 echo -n "Entrez l'interface que vous souhaitez utiliser pour créer le point d'accès wifi. L'interface ne doit pas être connectée à internet :"
 read -e fakeap_interface
@@ -85,7 +85,7 @@ range 10.0.0.20 10.0.0.50;
 echo "[+] Configuration du point d'accès wifi"
 echo
 echo "[+] Starting FakeAP..."
-xterm -xrm '*hold: true' -geometry 75x15+1+0 -T "myHotspot - $ESSID - $fakeap - $fakeap_interface" -e airbase-ng --essid -c 1 "$ESSID" $fakeap_interface & fakeapid=$!
+xterm -xrm '*hold: true' -geometry 75x15+1+0 -T "myHotspot - $ESSID - $fakeap - $fakeap_interface" -e airbase-ng --essid "$ESSID" -c 1 $fakeap_interface & fakeapid=$!
 disown
 sleep 5
 
@@ -175,7 +175,7 @@ ifconfig $internet_interface up
 echo "[+] Redémarrage du système internet"
 
 echo "[+] Nettoyage et restauration terminé !"
-echo "[+] Merci d'utiliser myHotdpot et à bientôt !"
+echo "[+] Merci d'utiliser myHotspot et à bientôt !"
 sleep 6
 clear
 fi
