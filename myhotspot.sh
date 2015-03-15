@@ -15,6 +15,7 @@ echo "[+] Airbase-ng (fake ap) killed"
 pkill dhcpd
 echo "[+] DHCP killed"
 pkill sslstrip
+killall python
 echo "[+] SSLStrip killed"
 pkill ettercap
 echo "[+] Ettercap killed"
@@ -134,44 +135,49 @@ sleep 5
 
 clear
 echo "[+] Activation"
-echo "PRESSEZ Y POUR QUITTER"
-read WISH
+echo "IMPORTANT : Pressez Y pour quitter, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. Si vous n'avez pas quitter correctement, tapez ./airssl.sh kill"
+read STOP
 
 # Clean up
-if [ $WISH = "y" ] ; then
+if [ $STOP = "y" ] ; then
 echo
-echo "[+] Cleaning up airssl and resetting iptables..."
+echo "[+] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux."
 
 kill ${fakeapid}
-echo "[+] Airbase-ng (fake ap) killed"
+echo "[+] Airbase-ng (fake ap) stoppé"
 kill ${dchpid}
-echo "[+] DHCP killed"
+echo "[+] DHCP stoppé"
 kill ${sslstripid}
-echo "[+] SSLStrip killed"
+echo "[+] SSLStrip stoppé"
 kill ${ettercapid}
-echo "[+] Ettercap killed"
+echo "[+] Ettercap stoppé"
 kill ${driftnetid}
-echo "[+] Driftnet killed"
+echo "[+] Driftnet stoppé"
 kill ${sslstriplogid}
-echo "[+] SSLStrip log killed"
+echo "[+] SSLStrip log stoppé"
+sleep 3
 
 airmon-ng stop $fakeap_interface
 airmon-ng stop $fakeap
-echo "[+] Airmon-ng stopped"
+echo "[+] Airmon-ng stoppé"
+sleep 3
 echo
 echo "0" > /proc/sys/net/ipv4/ip_forward
 iptables --flush
 iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
-echo "[+] iptables restored"
+echo "[+] iptables restaurée"
+sleep 3
 echo
 ifconfig $internet_interface up
 /etc/init.d/networking restart
-echo "[+] Restarting network..."
+echo "[+] Redémarrage du système internet"
 
-echo "[+] Clean up successful..."
-echo "[+] Thank you for using airssl, Good Bye..."
+echo "[+] Nettoyage et restauration terminé !"
+echo "[+] Merci d'utiliser myHotdpot et à bientôt !"
+sleep 6
+clear
 fi
 exit
 
