@@ -111,6 +111,7 @@ sleep 3
 echo "[+] Configuration et démarrage DHCP"
 chmod 777 /var/run/
 touch /var/run/dhcpd.pid
+chmod 777 /var/run/dhcpd.pid
 chown dhcpd:dhcpd /var/run/dhcpd.pid
 xterm -xrm '*hold: true' -geometry 75x20+1+100 -T DHCP -e dhcpd -f -d -cf "/pentest/wireless/airssl/dhcpd.conf" at0 & dchpid=$!
 disown
