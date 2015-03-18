@@ -3,48 +3,48 @@
 # myHotspot - version 1.0
 
 if [ "$1" == "kill" ];then
-# Clean up if not pressed y
 echo
-echo "[+] Cleaning up airssl and resetting iptables..."
-
-echo -n "Enter your interface used for the fake AP, generally wlan0 or wlan1: "
-fakeap_interface="mon0"
+echo "[+] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux."
 
 pkill airbase-ng
-echo "[+] Airbase-ng (fake ap) killed"
+echo "[+] Airbase-ng (fake ap) stoppé"
 pkill dhcpd
-echo "[+] DHCP killed"
-pkill sslstrip
+echo "[+] DHCP stoppé"
 killall python
-echo "[+] SSLStrip killed"
+echo "[+] SSLStrip et SSLStrip Log stoppés"
 pkill ettercap
-echo "[+] Ettercap killed"
-pkill driftnet
-echo "[+] Driftnet killed"
-pkill sslstrip.log
-echo "[+] SSLStrip log killed"
+echo "[+] Ettercap stoppé"
+sleep 3
 
-airmon-ng stop $fakeap_interface
-airmon-ng stop $fakeap
-echo "[+] Airmon-ng stopped"
+echo "[+] Airmon-ng stoppé"
+sleep 3
 echo
 echo "0" > /proc/sys/net/ipv4/ip_forward
 iptables --flush
 iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
-echo "[+] iptables restored"
+echo "[+] iptables restaurée"
+sleep 2
+airmon-ng stop mon0
+sleep 1
 echo
-ifconfig $internet_interface up
-/etc/init.d/networking restart
-echo "[+] Restarting network..."
+ifconfig wlan0 up
+ifconfig wlan1 up
+ifconfig eth0 up
+# Ajouter-en d'autres si vous le souhaitez
+/etc/init.d/networking stop && /etc/init.d/networking start
+echo "[+] Redémarrage du système internet"
 
-echo "[+] Clean up successful..."
-echo "[+] Thank you for using airssl, Good Bye..."
+echo "[+] Nettoyage et restauration terminé !"
+echo "[+] Merci d'utiliser myHotspot et à bientôt !"
+sleep 6
+clear
+
 exit
 else
 
-# Network questions
+# Initialisation
 echo
 echo " - myHotspot - Version 1.0  - Par Nyzo - "
 echo
@@ -64,7 +64,7 @@ fakeap=$fakeap_interface
 fakeap_interface="mon0"
 
 # Création de la configuration DHCPD
-mkdir -p "/pentest/wireless/airssl"
+mkdir -p "/pentest/wireless/myhotspot"
 echo "authoritative;
 
 default-lease-time 600;
@@ -79,7 +79,7 @@ option domain-name-servers 10.0.0.1;
 
 range 10.0.0.20 10.0.0.50;
 
-}" > /pentest/wireless/airssl/dhcpd.conf
+}" > /pentest/wireless/myhotspot/dhcpd.conf
 
 # Création du point d'accès wifi
 echo "[+] Configuration du point d'accès wifi"
@@ -140,7 +140,7 @@ echo "Si vous n'avez pas aperçu d'erreur(s), le script est fonctionnel et vous 
 echo "IMPORTANT : Pressez Y pour quitter, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. Si vous n'avez pas quitter correctement, tapez ./airssl.sh kill"
 read STOP
 
-# Clean up
+# Nettoyage
 if [ $STOP = "y" ] ; then
 echo
 echo "[+] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux."
