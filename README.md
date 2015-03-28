@@ -8,7 +8,7 @@ Ettercap, DHCP, Aircrack et SSLStrip
 ```sh
 $ sudo apt-get update
 $ sudo apt-get upgrade
-$ sudo apt-get install ettercap-graphical isc-dhcp-server sslstrip aircrack-ng
+$ sudo apt-get install ettercap-graphical isc-dhcp-server sslstrip aircrack-ng dsniff
 ```
 ### Installer
 Clonez le dépôt Github :
