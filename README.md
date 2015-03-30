@@ -1,4 +1,4 @@
-# myHotspot 1.0 - Par Nyzo
+# myHotspot 1.1 - Par Nyzo
 *myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng, sslstrip et ettercap.
 ## Installation
 ### Configuration
