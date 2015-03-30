@@ -42,7 +42,7 @@ Lancez le script :
 ```
 Et suivez les instructions.
 ## Correction de bug(s)
-*Contactez-moi si vous rencontrez n'importe quel bug(s), j'emploierai tout les moyens possibles pour le(s) résoudre(s)*
+*Contactez-moi si vous rencontrez n'importe quel bug(s), j'emploierai tout les moyens possibles pour le(s) résoudre(s).*
 
 Parfois, au lancement du serveur DHCP, une erreur apparaît comme :
 ```
@@ -63,6 +63,7 @@ sudo apparmor_status
 ```
 
 Si **/usr/sbin/dhcpd** est présent dans la liste, suivez ces instructions :
+
 1. Arrêtez apparmor
 ```sh
 sudo /etc/init.d/apparmor stop
