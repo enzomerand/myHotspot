@@ -4,17 +4,35 @@
 ### Configuration
 Fonctionne sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
 ### Paquets requis
-DHCP, Aircrack et SSLStrip. Il vous faudra aussi Net-Creds.
+DHCP, Aircrack, SSLStrip2, Net-Creds, DNS2Proxy, dnspython.
 ```sh
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install isc-dhcp-server sslstrip aircrack-ng
+sudo apt-get install isc-dhcp-server aircrack-ng python-scapy python python-pcapy
 ```
 Pour Net-Creds (requis pour voir les mots de passe, etc) :
 ```sh
 cd /etc
 sudo git clone https://github.com/DanMcInerney/net-creds.git
-sudo apt-get install python-scapy python
+```
+Pour SSLStrip2 :
+```sh
+cd /etc
+sudo git clone https://github.com/LeonardoNve/sslstrip2.git
+cd sslstrip2
+python setup.py install
+```
+Pour DNS2Proxy :
+```sh
+cd /etc
+sudo git clone https://github.com/LeonardoNve/dns2proxy.git
+```
+Pour DNSPython :
+```sh
+cd /etc
+sudo git clone https://github.com/rthalley/dnspython.git
+cd dnspython
+python setup.py install
 ```
 ### Installer
 Clonez le dépôt Github :
@@ -95,4 +113,4 @@ sudo /etc/init.d/apparmor start
 Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fichiers /etc/dhcp/dhcpd.conf or /var/lib/dhcp/dhcpd.leases ou /pentest/wireless/myhotspot/dhcpd.conf. Pour plus d'informations, regardez **man apparmor**
 
 ## À venir
-Rien pour le moment.
+Correction du bug de sslstrip.
