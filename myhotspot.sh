@@ -18,8 +18,6 @@ iptables -X
 iptables -t nat -X
 iptables -t mangle -X
 
-unset SESSION_MANAGER
-
 #Vérification des installations
 #DHCP
 if [[ ! -x /usr/sbin/dhcpd ]];then
@@ -90,6 +88,8 @@ option domain-name-servers 10.0.0.1;
 range 10.0.0.20 10.0.0.50;
 
 }" > /pentest/wireless/myhotspot/dhcpd.conf
+
+unset SESSION_MANAGER
 
 # Création du point d'accès wifi
 echo -e "$info\n[+]Configuration du point d'accès wifi $warn"
