@@ -1,38 +1,19 @@
-# myHotspot 1.1 - Par Nyzo
-*myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng, sslstrip et ettercap.
+# myHotspot 1.2 - Par Nyzo
+*myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng, sslstrip et net-creds.
 ## Installation
 ### Configuration
 Fonctionne sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
 ### Paquets requis
-DHCP, Aircrack, SSLStrip2, Net-Creds, DNS2Proxy, dnspython.
+DHCP, Aircrack, SSLStrip, Net-Creds.
 ```sh
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install isc-dhcp-server aircrack-ng python-scapy python python-pcapy
+sudo apt-get install isc-dhcp-server aircrack-ng python-scapy python python-twisted sslstrip
 ```
 Pour Net-Creds (requis pour voir les mots de passe, etc) :
 ```sh
 cd /etc
 sudo git clone https://github.com/DanMcInerney/net-creds.git
-```
-Pour SSLStrip2 :
-```sh
-cd /etc
-sudo git clone https://github.com/LeonardoNve/sslstrip2.git
-cd sslstrip2
-python setup.py install
-```
-Pour DNS2Proxy :
-```sh
-cd /etc
-sudo git clone https://github.com/LeonardoNve/dns2proxy.git
-```
-Pour DNSPython :
-```sh
-cd /etc
-sudo git clone https://github.com/rthalley/dnspython.git
-cd dnspython
-python setup.py install
 ```
 ### Installer
 Clonez le dépôt Github :
