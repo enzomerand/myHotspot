@@ -1,20 +1,27 @@
-# myHotspot 1.2 - Par Nyzo
+# myHotspot 1.3 - Par Nyzo
 *myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng, sslstrip et net-creds.
 ## Installation
 ### Configuration
 Fonctionne sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
 ### Paquets requis
-DHCP, Aircrack, SSLStrip, Net-Creds.
+DHCP, Aircrack, MITMf, Net-Creds.
 ```sh
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install isc-dhcp-server aircrack-ng python-scapy python python-twisted sslstrip
+sudo apt-get install isc-dhcp-server aircrack-ng python-scapy python python-twisted
 ```
-Pour Net-Creds (requis pour voir les mots de passe, etc) :
+Pour Net-Creds :
 ```sh
 cd /etc
 sudo git clone https://github.com/DanMcInerney/net-creds.git
 ```
+Pour MITMf :
+```h
+cd /etc
+sudo git clone https://github.com/byt3bl33d3r/MITMf.git
+./setup.sh
+```
+Des erreurs peuvent apparaître, souvent pour cause de paquets non-installés. Il faut donc installer les paquets listés dans le fichier requirements.txt.
 ### Installer
 Clonez le dépôt Github :
 ```sh
