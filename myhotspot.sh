@@ -29,14 +29,14 @@ if [[ ! -x /usr/sbin/dhcpd ]];then
   fi
 fi
 #Net-Creds
-if [[ ! -x /etc/net-creds ]];then
+if [[ ! -x /etc/MITMf ]];then
   echo -e "$warn\nVous devez installer net-creds"
   sleep 1
   echo -e "$q\nVoulez-vous le faire maintenant ? (y/n)"
   read var
   if [[ $var == y ]];then
     cd /etc
-    git clone https://github.com/DanMcInerney/net-creds.git
+    git clone https://github.com/byt3bl33d3r/MITMf.git
     apt-get install python-scapy python
   else
     exit_fn
