@@ -1,19 +1,14 @@
 # myHotspot 1.3 - Par Nyzo
-*myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng, sslstrip et net-creds.
+*myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng et MITMf.
 ## Installation
 ### Configuration
 Fonctionne sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
 ### Paquets requis
-DHCP, Aircrack, MITMf, Net-Creds.
+DHCP, Aircrack, MITMf.
 ```sh
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install isc-dhcp-server aircrack-ng python-scapy python python-twisted
-```
-Pour Net-Creds :
-```sh
-cd /etc
-sudo git clone https://github.com/DanMcInerney/net-creds.git
 ```
 Pour MITMf :
 ```h
@@ -101,4 +96,4 @@ sudo /etc/init.d/apparmor start
 Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fichiers /etc/dhcp/dhcpd.conf or /var/lib/dhcp/dhcpd.leases ou /pentest/wireless/myhotspot/dhcpd.conf. Pour plus d'informations, regardez **man apparmor**
 
 ## À venir
-Correction du bug de sslstrip.
+Correction du bug de du bypass ssl.
