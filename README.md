@@ -96,4 +96,4 @@ sudo /etc/init.d/apparmor start
 Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fichiers /etc/dhcp/dhcpd.conf or /var/lib/dhcp/dhcpd.leases ou /pentest/wireless/myhotspot/dhcpd.conf. Pour plus d'informations, regardez **man apparmor**
 
 ## À venir
-Correction du bug de du bypass ssl.
+Correction du bug de du bypass ssl. Implémentation dans arduino (sous un autre langage).
