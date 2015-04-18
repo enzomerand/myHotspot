@@ -29,7 +29,7 @@ Clonez le dépôt Github :
 ```sh
 cd /etc/
 sudo clone git https://github.com/Nyzo/myHotspot.git
-sudo chmod 755  myhotspot.sh
+sudo chmod 755 myhotspot.sh
 ```
 Si vous n'avez pas installer git :
 ```sh
@@ -72,15 +72,15 @@ sudo apparmor_status
 
 Si **/usr/sbin/dhcpd** est présent dans la liste, suivez ces instructions :
 
-1. Arrêtez apparmor
+* Arrêtez apparmor
 ```sh
 sudo /etc/init.d/apparmor stop
 ```
-2. Editez /etc/apparmor.d/usr.sbin.dhcpd avec les permissions root :
+* Editez /etc/apparmor.d/usr.sbin.dhcpd avec les permissions root :
 ```sh
 sudo nano /etc/apparmor.d/usr.sbin.dhcpd
 ```
-3. Et assurez-vous que le fichier contient ces lignes (peu importe l'ordre) :
+* Et assurez-vous que le fichier contient ces lignes (peu importe l'ordre) :
 ```sh
   /etc/dhcp/ r,
   /etc/dhcp/** r,
@@ -95,7 +95,7 @@ sudo nano /etc/apparmor.d/usr.sbin.dhcpd
   /var/log/** rw,
   /{,var/}run/{,dhcp-server/}dhcpd{,6}.pid rw,
 ```
-4. Démarrez apparmor
+* Démarrez apparmor
 ```sh
 sudo /etc/init.d/apparmor start
 ```
@@ -144,6 +144,7 @@ Alors executez la commande suivante :
 netstat -tulpn | grep :53
 ```
 Puis repérez le PID associé au port 53 puis fermez-le :
+
 **(exemple)**
 ```sh
 kill 2721
