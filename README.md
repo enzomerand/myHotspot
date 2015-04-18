@@ -103,7 +103,7 @@ sudo /etc/init.d/apparmor start
 Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fichiers /etc/dhcp/dhcpd.conf or /var/lib/dhcp/dhcpd.leases ou /pentest/wireless/myhotspot/dhcpd.conf. Pour plus d'informations, regardez **man apparmor**
 
 
-Si au lancement de MITMf un erreur similaire apparaît :
+Si au lancement de MITMf une erreur similaire à celle-ci apparaît :
 ```sh
 Traceback (most recent call last):
   File "mitmf.py", line 41, in <module>
@@ -121,7 +121,34 @@ Alors executez la commande suivante :
 pip install -e git+git://github.com/selwin/ua-parser.git#egg=ua-parser
 ```
 
+
+Si au lancement de MITMf une erreur similaire à celle-ci apparaît :
+```sh
+Traceback (most recent call last):
+  File "mitmf.py", line 187, in <module>
+    DNSChef.getInstance().startUDP()
+  File "/etc/MITMf/libs/dnschef/dnschef.py", line 473, in startUDP
+    server = ThreadedUDPServer((self.server_address, int(self.port)), UDPHandler)
+  File "/etc/MITMf/libs/dnschef/dnschef.py", line 402, in __init__
+    SocketServer.UDPServer.__init__(self,server_address,RequestHandlerClass) 
+  File "/usr/lib/python2.7/SocketServer.py", line 419, in __init__
+    self.server_bind()
+  File "/usr/lib/python2.7/SocketServer.py", line 430, in server_bind
+    self.socket.bind(self.server_address)
+  File "/usr/lib/python2.7/socket.py", line 224, in meth
+    return getattr(self._sock,name)(*args)
+socket.error: [Errno 98] Address already in use
+```
+Alors executez la commande suivante :
+```sh
+netstat -tulpn | grep :53
+```
+Puis repérez le PID associé au port 53 puis fermez-le :
+**(exemple)**
+```sh
+kill 2721
+```
 ## À venir
-Correction du bug du bypass ssl. Implémentation dans arduino (sous un autre langage).
+Correction du bug du bypass ssl (hsts). Implémentation dans arduino (sous un autre langage).
 
 [MITMf]:https://github.com/byt3bl33d3r/MITMf
