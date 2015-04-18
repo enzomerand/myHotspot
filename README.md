@@ -102,6 +102,25 @@ sudo /etc/init.d/apparmor start
 
 Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fichiers /etc/dhcp/dhcpd.conf or /var/lib/dhcp/dhcpd.leases ou /pentest/wireless/myhotspot/dhcpd.conf. Pour plus d'informations, regardez **man apparmor**
 
+
+Si au lancement de MITMf un erreur similaire apparaît :
+```sh
+Traceback (most recent call last):
+  File "mitmf.py", line 41, in <module>
+    import user_agents
+  File "/usr/local/lib/python2.7/dist-packages/user_agents/__init__.py", line 3, in <module>
+    from .parsers import parse
+  File "/usr/local/lib/python2.7/dist-packages/user_agents/parsers.py", line 4, in <module>
+    from ua_parser import user_agent_parser
+  File "/usr/local/lib/python2.7/dist-packages/ua_parser-0.4.0-py2.7.egg/ua_parser/user_agent_parser.py", line 460, in <module>
+    yamlFile = open(yamlPath)
+IOError: [Errno 2] No such file or directory: '/usr/local/lib/python2.7/dist-packages/ua_parser-0.4.0-py2.7.egg/ua_parser/regexes.yaml'
+```
+Alors executez la commande suivante :
+```sh
+pip install -e git+git://github.com/selwin/ua-parser.git#egg=ua-parser
+```
+
 ## À venir
 Correction du bug du bypass ssl. Implémentation dans arduino (sous un autre langage).
 
