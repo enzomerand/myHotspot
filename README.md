@@ -8,15 +8,21 @@ DHCP, Aircrack, MITMf.
 ```sh
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install isc-dhcp-server aircrack-ng python-scapy python python-twisted
+sudo apt-get install isc-dhcp-server aircrack-ng python
 ```
 Pour MITMf :
-```h
+```sh
 cd /etc
 sudo git clone https://github.com/byt3bl33d3r/MITMf.git
+cd MITMf
+sudo pip install -r requirements.txt
 ./setup.sh
 ```
-Des erreurs peuvent apparaître, souvent pour cause de paquets non-installés. Il faut donc installer les paquets listés dans le fichier requirements.txt.
+Sur Kali, une erreur peut apparaître : *ImportError: no module named pcap*. Pour résoude cette erreur, lancez la commande : 
+```sh
+sudo apt-get install python-pycap
+```
+Plus d'infos sur [MITMf].
 ### Installer
 Clonez le dépôt Github :
 ```sh
@@ -97,3 +103,5 @@ Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fic
 
 ## À venir
 Correction du bug de du bypass ssl. Implémentation dans arduino (sous un autre langage).
+
+[MITMf]:https://github.com/byt3bl33d3r/MITMf
