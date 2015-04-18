@@ -16,6 +16,7 @@ cd /etc
 sudo git clone https://github.com/byt3bl33d3r/MITMf.git
 cd MITMf
 sudo pip install -r requirements.txt
+su root
 ./setup.sh
 ```
 Sur Kali, une erreur peut apparaître : *ImportError: no module named pcap*. Pour résoude cette erreur, lancez la commande : 
@@ -102,6 +103,6 @@ sudo /etc/init.d/apparmor start
 Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fichiers /etc/dhcp/dhcpd.conf or /var/lib/dhcp/dhcpd.leases ou /pentest/wireless/myhotspot/dhcpd.conf. Pour plus d'informations, regardez **man apparmor**
 
 ## À venir
-Correction du bug de du bypass ssl. Implémentation dans arduino (sous un autre langage).
+Correction du bug du bypass ssl. Implémentation dans arduino (sous un autre langage).
 
 [MITMf]:https://github.com/byt3bl33d3r/MITMf
