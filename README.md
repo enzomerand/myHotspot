@@ -30,7 +30,7 @@ Clonez le dépôt Github :
 ```sh
 cd /etc/
 sudo clone git https://github.com/Nyzo/myHotspot.git
-sudo chmod 755 myhotspot.sh
+sudo chmod +x myhotspot.sh
 ```
 Si vous n'avez pas installer git :
 ```sh
