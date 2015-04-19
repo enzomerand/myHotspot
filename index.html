@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>myHotspot by Nyzo</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>myHotspot</h1>
+        <p>myHotspot est un script pour linux, permettant de créer un faux point d&#39;accès wifi afin de récupérer les données des personnes connectées. Il existe plusieurs fonctionnalités.</p>
+
+        <p class="view"><a href="https://github.com/Nyzo/myHotspot">View the Project on GitHub <small>Nyzo/myHotspot</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Nyzo/myHotspot/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Nyzo/myHotspot/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Nyzo/myHotspot">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><img src="http://mtfo.fr/myhotspot.png" alt="myHotspot"></p>
+
+<h1>
+<a id="myhotspot-13---par-nyzo" class="anchor" href="#myhotspot-13---par-nyzo" aria-hidden="true"><span class="octicon octicon-link"></span></a>myHotspot 1.3 - Par Nyzo</h1>
+
+<p><em>myhotspot.sh</em> créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng et MITMf.</p>
+
+<hr>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>Fonctionne sur Ubuntu 14.04 LTS et les versions antérieures, <strong>si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)</strong></p>
+
+<h3>
+<a id="paquets-requis" class="anchor" href="#paquets-requis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Paquets requis</h3>
+
+<p>DHCP, Aircrack, MITMf.</p>
+
+<div class="highlight highlight-sh"><pre>sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install isc-dhcp-server aircrack-ng python</pre></div>
+
+<p>Pour MITMf :</p>
+
+<div class="highlight highlight-sh"><pre><span class="pl-c1">cd</span> /etc
+sudo git clone https://github.com/byt3bl33d3r/MITMf.git
+<span class="pl-c1">cd</span> MITMf
+sudo pip install -r requirements.txt
+su root
+./setup.sh</pre></div>
+
+<p>Sur Kali, une erreur peut apparaître : <em>ImportError: no module named pcap</em>. Pour résoude cette erreur, lancez la commande : </p>
+
+<div class="highlight highlight-sh"><pre>sudo apt-get install python-pycap</pre></div>
+
+<p>Plus d'infos sur <a href="https://github.com/byt3bl33d3r/MITMf">MITMf</a>.</p>
+
+<h3>
+<a id="installer" class="anchor" href="#installer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installer</h3>
+
+<p>Clonez le dépôt Github :</p>
+
+<div class="highlight highlight-sh"><pre><span class="pl-c1">cd</span> /etc/
+sudo clone git https://github.com/Nyzo/myHotspot.git
+sudo chmod 755 myhotspot.sh</pre></div>
+
+<p>Si vous n'avez pas installer git :</p>
+
+<div class="highlight highlight-sh"><pre>apt-get install git</pre></div>
+
+<h2>
+<a id="utiliser-le-script" class="anchor" href="#utiliser-le-script" aria-hidden="true"><span class="octicon octicon-link"></span></a>Utiliser le script</h2>
+
+<p>Identifiez-vous en tant que root :</p>
+
+<div class="highlight highlight-sh"><pre>su root</pre></div>
+
+<p>Allez dans le répertoire myHotspot :</p>
+
+<div class="highlight highlight-sh"><pre><span class="pl-c1">cd</span> /etc/myHotspot/</pre></div>
+
+<p>Lancez le script :</p>
+
+<div class="highlight highlight-sh"><pre>./myhotspot.sh</pre></div>
+
+<p>Et suivez les instructions.</p>
+
+<h2>
+<a id="correction-de-bugs" class="anchor" href="#correction-de-bugs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Correction de bug(s)</h2>
+
+<p><em>Contactez-moi si vous rencontrez n'importe quel bug(s), j'emploierai tout les moyens possibles pour le(s) résoudre(s).</em></p>
+
+<p>Parfois, au lancement du serveur DHCP, une erreur apparaît comme :</p>
+
+<pre><code>Can't open /etc/dhcp/dhcp.conf: permission denied
+</code></pre>
+
+<p>ou</p>
+
+<pre><code>Can't open /var/lib/dhcp/dhcpd.leases: permission denied.
+</code></pre>
+
+<p>ou</p>
+
+<pre><code>Can't open /pentest/wireless/myhotspot/dhcpd.conf: Permission denied
+</code></pre>
+
+<p>Si après avoir vérifier les permissions cela affiche toujours un message d'erreur, vérifiez <strong>apparmor</strong> :</p>
+
+<div class="highlight highlight-sh"><pre>sudo apparmor_status</pre></div>
+
+<p>Si <strong>/usr/sbin/dhcpd</strong> est présent dans la liste, suivez ces instructions :</p>
+
+<ul>
+<li>Arrêtez apparmor</li>
+</ul>
+
+<div class="highlight highlight-sh"><pre>sudo /etc/init.d/apparmor stop</pre></div>
+
+<ul>
+<li>Editez /etc/apparmor.d/usr.sbin.dhcpd avec les permissions root :</li>
+</ul>
+
+<div class="highlight highlight-sh"><pre>sudo nano /etc/apparmor.d/usr.sbin.dhcpd</pre></div>
+
+<ul>
+<li>Et assurez-vous que le fichier contient ces lignes (peu importe l'ordre) :</li>
+</ul>
+
+<div class="highlight highlight-sh"><pre>  /etc/dhcp/ r,
+  /etc/dhcp/<span class="pl-k">**</span> r,
+  /etc/dhcpd{,6}.conf r,
+  /etc/dhcpd{,6}_ldap.conf r,
+  /pentest/wireless/myhotspot/dhcpd{,6}.conf r,
+
+  /usr/sbin/dhcpd mr,
+
+  /var/lib/dhcp/dhcpd{,6}.leases<span class="pl-k">*</span> lrw,
+  /var/log/ r,
+  /var/log/<span class="pl-k">**</span> rw,
+  /{,var/}run/{,dhcp-server/}dhcpd{,6}.pid rw,</pre></div>
+
+<ul>
+<li>Démarrez apparmor</li>
+</ul>
+
+<div class="highlight highlight-sh"><pre>sudo /etc/init.d/apparmor start</pre></div>
+
+<p>Après cette opération, apparmor va autoriser le serveur DHCP à ouvrir les fichiers /etc/dhcp/dhcpd.conf or /var/lib/dhcp/dhcpd.leases ou /pentest/wireless/myhotspot/dhcpd.conf. Pour plus d'informations, regardez <strong>man apparmor</strong></p>
+
+<p>Si au lancement de MITMf une erreur similaire à celle-ci apparaît :</p>
+
+<div class="highlight highlight-sh"><pre>Traceback (most recent call last):
+  File <span class="pl-s"><span class="pl-pds">"</span>mitmf.py<span class="pl-pds">"</span></span>, line 41, <span class="pl-k">in</span> <span class="pl-k">&lt;</span>module<span class="pl-k">&gt;</span>
+    import user_agents
+  File <span class="pl-s"><span class="pl-pds">"</span>/usr/local/lib/python2.7/dist-packages/user_agents/__init__.py<span class="pl-pds">"</span></span>, line 3, <span class="pl-k">in</span> <span class="pl-k">&lt;</span>module<span class="pl-k">&gt;</span>
+    from .parsers import parse
+  File <span class="pl-s"><span class="pl-pds">"</span>/usr/local/lib/python2.7/dist-packages/user_agents/parsers.py<span class="pl-pds">"</span></span>, line 4, <span class="pl-k">in</span> <span class="pl-k">&lt;</span>module<span class="pl-k">&gt;</span>
+    from ua_parser import user_agent_parser
+  File <span class="pl-s"><span class="pl-pds">"</span>/usr/local/lib/python2.7/dist-packages/ua_parser-0.4.0-py2.7.egg/ua_parser/user_agent_parser.py<span class="pl-pds">"</span></span>, line 460, <span class="pl-k">in</span> <span class="pl-k">&lt;</span>module<span class="pl-k">&gt;</span>
+    yamlFile = open(yamlPath)
+IOError: [Errno 2] No such file or directory: <span class="pl-s"><span class="pl-pds">'</span>/usr/local/lib/python2.7/dist-packages/ua_parser-0.4.0-py2.7.egg/ua_parser/regexes.yaml<span class="pl-pds">'</span></span></pre></div>
+
+<p>Alors executez la commande suivante :</p>
+
+<div class="highlight highlight-sh"><pre>pip install -e git+git://github.com/selwin/ua-parser.git#egg=ua-parser</pre></div>
+
+<p>Si au lancement de MITMf une erreur similaire à celle-ci apparaît :</p>
+
+<div class="highlight highlight-sh"><pre>Traceback (most recent call last):
+  File <span class="pl-s"><span class="pl-pds">"</span>mitmf.py<span class="pl-pds">"</span></span>, line 187, <span class="pl-k">in</span> <span class="pl-k">&lt;</span>module<span class="pl-k">&gt;</span>
+    <span class="pl-en">DNSChef.getInstance().startUDP</span>()
+  File <span class="pl-s"><span class="pl-pds">"</span>/etc/MITMf/libs/dnschef/dnschef.py<span class="pl-pds">"</span></span>, line 473, <span class="pl-k">in</span> startUDP
+    server = ThreadedUDPServer<span class="pl-s"><span class="pl-pds">((</span>self.server_address<span class="pl-k">,</span> int(self.port<span class="pl-pds">))</span></span>, UDPHandler)
+  File <span class="pl-s"><span class="pl-pds">"</span>/etc/MITMf/libs/dnschef/dnschef.py<span class="pl-pds">"</span></span>, line 402, <span class="pl-k">in</span> __init__
+    SocketServer.UDPServer.__init__(self,server_address,RequestHandlerClass) 
+  File <span class="pl-s"><span class="pl-pds">"</span>/usr/lib/python2.7/SocketServer.py<span class="pl-pds">"</span></span>, line 419, <span class="pl-k">in</span> __init__
+    <span class="pl-en">self.server_bind</span>()
+  File <span class="pl-s"><span class="pl-pds">"</span>/usr/lib/python2.7/SocketServer.py<span class="pl-pds">"</span></span>, line 430, <span class="pl-k">in</span> server_bind
+    self.socket.<span class="pl-c1">bind</span>(self.server_address)
+  File <span class="pl-s"><span class="pl-pds">"</span>/usr/lib/python2.7/socket.py<span class="pl-pds">"</span></span>, line 224, <span class="pl-k">in</span> meth
+    <span class="pl-k">return</span> getattr(self._sock,name)(<span class="pl-k">*</span>args)
+socket.error: [Errno 98] Address already <span class="pl-k">in</span> use</pre></div>
+
+<p>Alors executez la commande suivante :</p>
+
+<div class="highlight highlight-sh"><pre>netstat -tulpn <span class="pl-k">|</span> grep :53</pre></div>
+
+<p>Puis repérez le PID associé au port 53 puis fermez-le :</p>
+
+<p><strong>(exemple)</strong></p>
+
+<div class="highlight highlight-sh"><pre><span class="pl-c1">kill</span> 2721</pre></div>
+
+<h2>
+<a id="À-venir" class="anchor" href="#%C3%80-venir" aria-hidden="true"><span class="octicon octicon-link"></span></a>À venir</h2>
+
+<p>Correction du bug du bypass ssl (hsts). Implémentation dans arduino (sous un autre langage). Simplification du script et augmentation de la rapidité de la navigation sur internet.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Nyzo">Nyzo</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-36762029-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
