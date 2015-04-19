@@ -1,3 +1,4 @@
+![myHotspot](http://mtfo.fr/myhotspot.png)
 # myHotspot 1.3 - Par Nyzo
 *myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng et MITMf.
 ## Installation
@@ -150,6 +151,6 @@ Puis repérez le PID associé au port 53 puis fermez-le :
 kill 2721
 ```
 ## À venir
-Correction du bug du bypass ssl (hsts). Implémentation dans arduino (sous un autre langage).
+Correction du bug du bypass ssl (hsts). Implémentation dans arduino (sous un autre langage). Simplification du script et augmentation de la rapidité de la navigation sur internet.
 
 [MITMf]:https://github.com/byt3bl33d3r/MITMf
