@@ -50,6 +50,10 @@ else
   cd /etc/myHotspot
 fi
 
+#Mise à jour
+echo 'Mise à jour de myHotspot'
+git pull
+
 # Initialisation
 echo
 echo " - myHotspot - Version 1.3 - Par Nyzo - "
