@@ -32,7 +32,7 @@ cd /etc/
 sudo clone git https://github.com/Nyzo/myHotspot.git
 sudo chmod +x myhotspot.sh
 ```
-Si vous n'avez pas installer git :
+Si vous n'avez pas installé git :
 ```sh
 apt-get install git
 ```
@@ -117,7 +117,7 @@ Traceback (most recent call last):
     yamlFile = open(yamlPath)
 IOError: [Errno 2] No such file or directory: '/usr/local/lib/python2.7/dist-packages/ua_parser-0.4.0-py2.7.egg/ua_parser/regexes.yaml'
 ```
-Alors executez la commande suivante :
+Alors exécutez la commande suivante :
 ```sh
 pip install -e git+git://github.com/selwin/ua-parser.git#egg=ua-parser
 ```
@@ -140,7 +140,7 @@ Traceback (most recent call last):
     return getattr(self._sock,name)(*args)
 socket.error: [Errno 98] Address already in use
 ```
-Alors executez la commande suivante :
+Alors exécutez la commande suivante :
 ```sh
 netstat -tulpn | grep :53
 ```
