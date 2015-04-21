@@ -9,8 +9,9 @@ DHCP, Aircrack, MITMf.
 ```sh
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install isc-dhcp-server aircrack-ng python
+sudo apt-get install isc-dhcp-server aircrack-ng python python-libpcap
 ```
+**Note :** les paquets suivants peuvent être installés automatiquement au lancement du script.<br>
 Pour MITMf :
 ```sh
 cd /etc
@@ -25,6 +26,19 @@ Sur Kali, une erreur peut apparaître : *ImportError: no module named pcap*. Pou
 sudo apt-get install python-pycap
 ```
 Plus d'infos sur [MITMf].
+<br><br>
+Pour PCredz :<br>
+Effectuez la commande suivante avant l'installation :
+```sh
+sudo apt-get remove python-pypcap && sudo apt-get install python-libpcap
+```
+Ensuite :
+```sh
+cd /etc
+sudo git clone https://github.com/lgandx/PCredz.git
+```
+Plus d'infos sur [PCredz]<br><br>
+**Un conflit est créé sur Kali entre MITMf et PCredz à cause des paquets _python-libpcap_ et _python-pypcap_**
 ### Installer
 Clonez le dépôt Github :
 ```sh
@@ -155,3 +169,4 @@ kill 2721
 Correction du bug du bypass ssl (hsts). Implémentation dans arduino (sous un autre langage). Simplification du script et augmentation de la rapidité de la navigation sur internet.
 
 [MITMf]:https://github.com/byt3bl33d3r/MITMf
+[PCredz]:https://github.com/lgandx/PCredz
