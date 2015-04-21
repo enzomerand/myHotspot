@@ -11,6 +11,7 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install isc-dhcp-server aircrack-ng python
 ```
+**Note :** le paquet suivant être installé automatiquement au lancement du script.<br>
 Pour MITMf :
 ```sh
 cd /etc
