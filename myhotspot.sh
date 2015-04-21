@@ -65,7 +65,7 @@ if [[ ! -x /etc/PCredz ]];then
   read var
   if [[ $var == y ]];then
     cd /etc
-    git clone https://github.com/byt3bl33d3r/PCredz.git
+    git clone https://github.com/lgandx/PCredz
     apt-get install python python-libpcap
     sleep 1
     echo -e "$info\n[$q✔$info] Installation terminée$txtrst"
