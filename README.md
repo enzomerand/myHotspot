@@ -9,15 +9,15 @@ DHCP, Aircrack, MITMf.
 ```sh
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install isc-dhcp-server aircrack-ng python
+sudo apt-get install isc-dhcp-server aircrack-ng python python-pip
 ```
-**Note :** le paquet suivant être installé automatiquement au lancement du script.<br>
+**Note :** le paquet suivant est installé automatiquement au lancement du script myHotspot.<br>
 Pour MITMf :
 ```sh
 cd /etc
 sudo git clone https://github.com/byt3bl33d3r/MITMf.git
 cd MITMf
-sudo pip install -r requirements.txt
+sudo pip install --upgrade -r requirements.txt
 su root
 ./setup.sh
 ```
@@ -152,7 +152,34 @@ Puis repérez le PID associé au port 53 puis fermez-le :
 ```sh
 kill 2721
 ```
+
+
+Si à l'installation des paquets python requis (avec pip) une erreur comme celle-ci apparaît :
+```sh
+Traceback (most recent call last):
+  File "/usr/bin/pip", line 9, in <module>
+    load_entry_point('pip==1.5.4', 'console_scripts', 'pip')()
+  File "/usr/local/lib/python2.7/dist-packages/pkg_resources/__init__.py", line 546, in load_entry_point
+    return get_distribution(dist).load_entry_point(group, name)
+  File "/usr/local/lib/python2.7/dist-packages/pkg_resources/__init__.py", line 2666, in load_entry_point
+    return ep.load()
+  File "/usr/local/lib/python2.7/dist-packages/pkg_resources/__init__.py", line 2339, in load
+    return self.resolve()
+  File "/usr/local/lib/python2.7/dist-packages/pkg_resources/__init__.py", line 2345, in resolve
+    module = __import__(self.module_name, fromlist=['__name__'], level=0)
+  File "/usr/lib/python2.7/dist-packages/pip/__init__.py", line 61, in <module>
+    from pip.vcs import git, mercurial, subversion, bazaar  # noqa
+  File "/usr/lib/python2.7/dist-packages/pip/vcs/mercurial.py", line 9, in <module>
+    from pip.download import path_to_url
+  File "/usr/lib/python2.7/dist-packages/pip/download.py", line 25, in <module>
+    from requests.compat import IncompleteRead
+ImportError: cannot import name IncompleteRead
+```
+Alors éxecutez la commande suivante :
+```sh
+easy_install -U pip
+```
 ## À venir
-Correction du bug du bypass ssl (hsts). Implémentation dans arduino (sous un autre langage). Simplification du script et augmentation de la rapidité de la navigation sur internet.
+Rien pour le moment.
 
 [MITMf]:https://github.com/byt3bl33d3r/MITMf
