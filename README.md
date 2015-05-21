@@ -142,6 +142,10 @@ Traceback (most recent call last):
     return getattr(self._sock,name)(*args)
 socket.error: [Errno 98] Address already in use
 ```
+ou
+```sh
+[DNSChef] Unable to start DNS server on port 53: port already in use
+```
 Alors exécutez la commande suivante :
 ```sh
 netstat -tulpn | grep :53
