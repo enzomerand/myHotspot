@@ -149,7 +149,7 @@ sleep 1
 echo -e "$info\n[$q+$info] Configuration et démarrage de MITMf $warn"
 cd /etc/MITMf
 echo -e "$txtrst"
-python mitmf.py -i at0 --hsts -f -k --sniffer -a & mitmfid=$!
+python mitmf.py -i at0 --hsts -f -k -a & mitmfid=$!
 cd /etc/myHotspot
 sleep 4
 
