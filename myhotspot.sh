@@ -149,7 +149,8 @@ sleep 1
 echo -e "$info\n[$q+$info] Configuration et démarrage de MITMf $warn"
 cd /etc/MITMf
 echo -e "$txtrst"
-python mitmf.py -i at0 --hsts -f -k -a & mitmfid=$!
+xterm -xrm '*hold: true' -geometry 120x30+1+350 -T MITMf -e python mitmf.py -i at0 --hsts --favicon -k -a --log-level debug -m & mitmfid=$!
+disown
 cd /etc/myHotspot
 sleep 4
 
