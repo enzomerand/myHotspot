@@ -3,7 +3,7 @@
 *myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng et MITMf.
 ## Installation
 ### Configuration
-Fonctionne sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
+Testé sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
 ### Paquets requis
 DHCP, Aircrack, MITMf.
 ```sh
@@ -36,7 +36,7 @@ sudo chmod +x myhotspot.sh
 ```
 Si vous n'avez pas installé git :
 ```sh
-apt-get install git
+sudo apt-get install git
 ```
 ## Utiliser le script
 Identifiez-vous en tant que root :
