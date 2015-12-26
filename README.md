@@ -184,6 +184,6 @@ Alors éxecutez la commande suivante :
 easy_install -U pip
 ```
 ## À venir
-Rien pour le moment.
+Une mise à jour est prévue. Une compatibilité pour Raspberry Pi par la suite.
 
 [MITMf]:https://github.com/byt3bl33d3r/MITMf
