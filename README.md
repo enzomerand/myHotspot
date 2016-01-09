@@ -144,13 +144,13 @@ socket.error: [Errno 98] Address already in use
 ```
 ou
 ```sh
-[DNSChef] Unable to start DNS server on port 53: port already in use
+[DNS] Unable to start DNS server on port 53: port already in use
 ```
 Alors exécutez la commande suivante :
 ```sh
 netstat -tulpn | grep :53
 ```
-Puis repérez le PID associé au port 53 puis fermez-le :
+Puis repérez le PID associé au port 53 puis tuez-le :
 
 **(exemple)**
 ```sh
