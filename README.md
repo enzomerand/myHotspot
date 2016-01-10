@@ -3,7 +3,8 @@
 *myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng et MITMf.
 ## Installation
 ### Configuration
-Testé sur Ubuntu 15.10 et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
+Testé sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement) dont une qui accepte le mode moniteur**
+**La compatibilité sur Ubuntu 15.10 est actuellement en phase de test.**
 ### Installation
 Plusieurs paquets requis seront installés automatiquement.
 Pour commencer, clonez le dêpot ou téléchargez-le (git ou wget) :
