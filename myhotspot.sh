@@ -126,7 +126,7 @@ sleep 1
 echo -e "$info\n[$q+$info] Configuration et démarrage de MITMf $warn"
 cd /etc/MITMf
 echo -e "$txtrst"
-xterm -xrm '*hold: true' -geometry 120x30+1+350 -T MITMf -e python mitmf.py -i at0 --hsts --favicon -k --log-level debug --gateway 192.168.2.1 & mitmfid=$!
+xterm -xrm '*hold: true' -geometry 120x30+1+350 -T MITMf -e python mitmf.py -i at0 --hsts --favicon -k --log-level debug & mitmfid=$!
 disown
 cd /etc/myHotspot
 sleep 4
