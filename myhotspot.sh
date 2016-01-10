@@ -15,7 +15,7 @@ info="\e[0;33m" #Info, jaune
 
 init() {
   if [ $1 -eq 0 ]; then
-    echo -e "$info\n./myhotspot.sh [install, start, update]$txtrst"
+    echo -e "$info\n[sudo] ./myhotspot.sh [install|start|update]$txtrst"
     echo
     exit 0
   else
@@ -60,7 +60,7 @@ init() {
       echo -e "$info[$q✔$info] Mise à jour de myHotspot et MITMf terminée$txtrst"
       exit 0
     else
-      echo -e "$info\n./myhotspot.sh [install, start, update]$txtrst"
+      echo -e "$info\n[sudo] ./myhotspot.sh [install|start|update]$txtrst"
       echo
       exit 0
     fi
