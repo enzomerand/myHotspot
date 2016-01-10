@@ -1,9 +1,9 @@
 #!/bin/bash
-# Copyright (C) 2015 - Nyzo
-# myHotspot - version 1.3
+# Copyright (C) 2016 - Nyzo
+# myHotspot - version 1.4
 
 if [[ $EUID -ne 0 ]]; then
-  echo "Vous devez être en root (su root)" 2>&1
+  echo "Vous devez être en root (su root, recommandé) ou utiliser sudo" 2>&1
   exit 1
 fi
 
@@ -13,81 +13,60 @@ warn="\e[0;31m" #Alerte, rouge
 q="\e[0;32m"    #Question, vert
 info="\e[0;33m" #Info, jaune
 
-init_fn() {
-
-#Vérification des installations
-#DHCP
-if [[ ! -x /usr/sbin/dhcpd ]];then
-  echo -e "$info\n[$warn✘$info] isc-dhcp-server n'est pas installé !"
-  sleep 1
-  echo -e "$q\nVoulez-vous le faire maintenant ? (y/n) $txtrst"
-  read var
-  if [[ $var == y ]];then
-    apt-get install isc-dhcp-server
+init() {
+  if [ $1 -eq 0 ]; then
+    echo -e "$info\n./myhotspot.sh [install, start, update]$txtrst"
+    echo
+    exit 0
   else
-    exit_fn
+    if [ $2 == "install" ]; then
+      apt-get update
+      apt-get upgrade
+      apt-get install python-dev python-setuptools libpcap0.8-dev libnetfilter-queue-dev libssl-dev libjpeg-dev libxml2-dev libxslt1-dev libcapstone3 libcapstone-dev libffi-dev file isc-dhcp-server aircrack-ng
+      cd /etc
+      git clone https://github.com/byt3bl33d3r/MITMf
+      cd MITMf && git submodule init && git submodule update --recursive
+      pip install -r requirements.txt
+      clear
+      echo -e "$info\n[$q+$info] Installation réussie.$txtrst"
+      exit 0
+    elif [ $2 == "start" ]; then
+      echo
+      echo " - myHotspot - Version 1.4 - Par Nyzo - "
+      echo
+      route -n -A inet | grep UG
+      echo
+      echo -e -n "$q\nEntrez l'IP connectée à un réseau, listée ci-dessus : $txtrst\n"
+      read -e gatewayip
+      echo -e -n "$q\nEntrez l'interface connectée à un réseau, listée ci-dessus. Sélectionnez l'interface associée à l'IP précédemment choisie : $txtrst\n"
+      read -e internet_interface
+      echo -e -n "$q\nEntrez l'interface que vous souhaitez utiliser pour créer le point d'accès wifi. L'interface ne doit pas être connectée à internet : $txtrst\n"
+      read -e fakeap_interface
+      echo -e -n "$q\nEntrez le nom que vous souhaitez donner au point d'accès wifi (Ex: FreeWifi) : $txtrst\n"
+      read -e ESSID
+      airmon-ng start $fakeap_interface
+      fakeap=$fakeap_interface
+      fakeap_interface="mon0"
+      listenport="10000"
+      setup
+      echo -e -n "$txtrst\n"
+    elif [ $2 == "update" ]; then
+      git pull
+      cd /etc/MITMf
+      git pull
+      git submodule update
+      pip install -r requirements.txt --upgrade
+      echo -e "$info[$q✔$info] Mise à jour de myHotspot et MITMf terminée$txtrst"
+      exit 0
+    else
+      echo -e "$info\n./myhotspot.sh [install, start, update]$txtrst"
+      echo
+      exit 0
+    fi
   fi
-else
-echo -e "$info\n[$q✔$info] isc-dhcp-server installé"
-fi
-#MITMf
-if [[ ! -x /etc/MITMf ]];then
-  echo -e "$info\n[$warn✘$info] MITMf n'est pas installé !"
-  sleep 1
-  echo -e "$q\nVoulez-vous le faire maintenant ? (y/n)$txtrst"
-  read var
-  if [[ $var == y ]];then
-    cd /etc
-    git clone https://github.com/byt3bl33d3r/MITMf.git
-    apt-get install python
-    cd MITMf
-    pip install -r requirements.txt
-    ./setup.sh
-    sleep 1
-    echo -e "$info\n[$q✔$info] Installation terminée$txtrst"
-  else
-    exit_fn
-  fi
-else
-  echo -e "$info[$q✔$info] MITMf installé"
-  sleep 1
-  echo -e "$info\n[$q+$info] Mise à jour de MITMf$txtrst"
-  cd /etc/MITMf
-  ./update.sh
-  cd /etc/myHotspot
-  echo -e "$info[$q✔$info] Mise à jour de MITMf terminée"
-fi
-
-#Mise à jour
-echo -e "$info\n[$q+$info] Mise à jour de myHotspot$txtrst"
-git pull
-echo -e "$info[$q✔$info] Mise à jour de myHotspot terminée$txtrst"
-
-# Initialisation
-echo
-echo " - myHotspot - Version 1.3 - Par Nyzo - "
-echo
-route -n -A inet | grep UG
-echo
-echo -e -n "$q\nEntrez l'IP connectée à un réseau, listée ci-dessus : $txtrst\n"
-read -e gatewayip
-echo -e -n "$q\nEntrez l'interface connectée à un réseau, listée ci-dessus. Sélectionnez l'interface associée à l'IP précédemment choisie : $txtrst\n"
-read -e internet_interface
-echo -e -n "$q\nEntrez l'interface que vous souhaitez utiliser pour créer le point d'accès wifi. L'interface ne doit pas être connectée à internet : $txtrst\n"
-read -e fakeap_interface
-echo -e -n "$q\nEntrez le nom que vous souhaitez donner au point d'accès wifi (Ex: FreeWifi) : $txtrst\n"
-read -e ESSID
-airmon-ng start $fakeap_interface
-fakeap=$fakeap_interface
-fakeap_interface="mon0"
-listenport="10000"
-setup_fn
-echo -e -n "$txtrst\n"
 }
 
-setup_fn() {
-
-trap exit_fn INT
+setup() {
 
 # Création de la configuration DHCP
 mkdir -p "/pentest/wireless/myhotspot"
@@ -161,14 +140,14 @@ echo "> Si vous n'avez pas aperçu d'erreur(s), le script est fonctionnel et vou
 echo -e "$txtrst>$warn IMPORTANT$txtrst: Pour quitter, pressez q ou appuyez sur Ctrl+C, sinon vous pourriez obtenir des erreurs et des dysfonctionnements. $txtrst\n"
 read QUIT
 if [ $QUIT == "q" ] ; then
-exit_fn
+stop
 else
 read QUIT
 fi
 }
 
 # Nettoyage
-exit_fn() {
+stop() {
 echo -e "$info\n[$q+$info] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux.$warn\n"
 kill ${airbaseid}
 echo -e "$info\n[$q✔$info] Airbase-ng (fake ap) stoppé $warn\n"
@@ -190,14 +169,14 @@ echo -e "$info[$q✔$info] Airmon-ng stoppé $txtrst\n"
 sleep 1
 echo
 ifconfig $internet_interface up
-/etc/init.d/networking stop && /etc/init.d/networking start
+service network-manager restart
 echo -e "$info\n[$q✔$info] Redémarrage du système internet"
 echo -e "[$q✔$info] Nettoyage et restauration terminé !"
 echo -e "[$q+$info] Merci d'utiliser myHotspot et à bientôt !"
 echo -e -n "\e[0m" #Réinitialisation du texte
 sleep 3
 clear
-exit
+exit 0
 }
 
-init_fn
+init $# $1
