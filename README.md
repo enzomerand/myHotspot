@@ -1,55 +1,50 @@
 ![myHotspot](http://mtfo.fr/myhotspot.png)
-# myHotspot 1.3 - Par Nyzo
+# myHotspot 1.4 - Par Nyzo
 *myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng et MITMf.
 ## Installation
 ### Configuration
-Testé sur Ubuntu 14.04 LTS et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
-### Paquets requis
-DHCP, Aircrack, MITMf.
-```sh
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install isc-dhcp-server aircrack-ng python python-pip
-```
-**Note :** le paquet suivant est installé automatiquement au lancement du script myHotspot.<br>
-Pour MITMf :
+Testé sur Ubuntu 15.10 et les versions antérieures, **si vous n'êtes pas en ethernet, vous devrez avoir deux cartes wifi (soit wlan0 et wlan1, généralement)**
+### Installation
+Plusieurs paquets requis seront installés automatiquement.
+Pour commencer, clonez le dêpot ou téléchargez-le (git ou wget) :
 ```sh
 cd /etc
-sudo git clone https://github.com/byt3bl33d3r/MITMf.git
-cd MITMf
-sudo pip install --upgrade -r requirements.txt
-su root
-./setup.sh
-```
-Sur Kali, une erreur peut apparaître : *ImportError: no module named pcap*. Pour résoude cette erreur, lancez la commande : 
-```sh
-sudo apt-get install python-pycap
-```
-Plus d'infos sur [MITMf].
-### Installer
-Clonez le dépôt Github :
-```sh
-cd /etc/
 sudo clone git https://github.com/Nyzo/myHotspot.git
 cd myHotspot
 sudo chmod +x myhotspot.sh
 ```
-Si vous n'avez pas installé git :
+Lancez la commande suivante pour installer myHotspot et ses dépendances :
 ```sh
-sudo apt-get install git
+sudo ./myhotspot.sh install
 ```
-## Utiliser le script
+Avant de démarrer le script, assurez-vous d'avoir désactiver dnsmasq. Pour cela, éditez le fichier de configuration NetworkManager (*sudo nano /etc/NetworkManager/NetworkManager.conf*), ajoutez un # devant la ligne dns=dnsmasq puis tuez le processus :
+```sh
+netstat -tulpn | grep :53
+```
+Puis repérez le PID associé au port 53 puis tuez-le :
+
+**(exemple)**
+```sh
+kill 2721
+```
+### Mise à jour
+Pour mettre à jour myHotspot et ses dépendances, éxecutez la commande suivante :
+```sh
+sudo ./myhospot.sh update
+```
+### Utiliser le script
 Identifiez-vous en tant que root :
 ```sh
 su root
 ```
+Ou utilisez sudo devant la commande d'éxecution du script.
 Allez dans le répertoire myHotspot :
 ```sh
 cd /etc/myHotspot/
 ```
 Lancez le script :
 ```sh
-./myhotspot.sh
+./myhotspot.sh start
 ```
 Et suivez les instructions.
 ## Correction de bug(s)
@@ -184,6 +179,8 @@ Alors éxecutez la commande suivante :
 easy_install -U pip
 ```
 ## À venir
-Une mise à jour est prévue. Une compatibilité pour Raspberry Pi par la suite.
+Version 1.4 en développement.
+
+Plus d'infos sur [MITMf].
 
 [MITMf]:https://github.com/byt3bl33d3r/MITMf
