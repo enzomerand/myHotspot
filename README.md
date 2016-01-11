@@ -19,7 +19,11 @@ Lancez la commande suivante pour installer myHotspot et ses dépendances :
 ```sh
 sudo ./myhotspot.sh install
 ```
-Avant de démarrer le script, assurez-vous d'avoir désactiver dnsmasq. Pour cela, éditez le fichier de configuration NetworkManager (*sudo nano /etc/NetworkManager/NetworkManager.conf*), ajoutez un # devant la ligne dns=dnsmasq puis tuez le processus :
+Pour terminer l'installation, éditez le fichier de configuration MITMF :
+```sh
+sudo nano /etc/MITMf/config/mitmf.conf
+```
+Puis repérez la ligne *port = 53* dans la section *[[DNS]]* et changez le port par un port non utilisé (54 par exemple) **seulement si vous utilisez dnsmasq (port 53)**. Pour savoir si un port est utilisé, faites :
 ```sh
 netstat -tulpn | grep :53
 ```
@@ -119,39 +123,6 @@ IOError: [Errno 2] No such file or directory: '/usr/local/lib/python2.7/dist-pac
 Alors exécutez la commande suivante :
 ```sh
 pip install -e git+git://github.com/selwin/ua-parser.git#egg=ua-parser
-```
-
-
-Si au lancement de MITMf une erreur similaire à celle-ci apparaît :
-```sh
-Traceback (most recent call last):
-  File "mitmf.py", line 187, in <module>
-    DNSChef.getInstance().startUDP()
-  File "/etc/MITMf/libs/dnschef/dnschef.py", line 473, in startUDP
-    server = ThreadedUDPServer((self.server_address, int(self.port)), UDPHandler)
-  File "/etc/MITMf/libs/dnschef/dnschef.py", line 402, in __init__
-    SocketServer.UDPServer.__init__(self,server_address,RequestHandlerClass) 
-  File "/usr/lib/python2.7/SocketServer.py", line 419, in __init__
-    self.server_bind()
-  File "/usr/lib/python2.7/SocketServer.py", line 430, in server_bind
-    self.socket.bind(self.server_address)
-  File "/usr/lib/python2.7/socket.py", line 224, in meth
-    return getattr(self._sock,name)(*args)
-socket.error: [Errno 98] Address already in use
-```
-ou
-```sh
-[DNS] Unable to start DNS server on port 53: port already in use
-```
-Alors exécutez la commande suivante :
-```sh
-netstat -tulpn | grep :53
-```
-Puis repérez le PID associé au port 53 puis tuez-le :
-
-**(exemple)**
-```sh
-kill 2721
 ```
 
 
