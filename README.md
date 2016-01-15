@@ -11,7 +11,7 @@ Plusieurs paquets requis seront installés automatiquement.
 Pour commencer, clonez le dêpot ou téléchargez-le (git ou wget) :
 ```sh
 cd /etc
-sudo clone git https://github.com/Nyzo/myHotspot.git
+sudo git clone https://github.com/Nyzo/myHotspot.git
 cd myHotspot
 sudo chmod +x myhotspot.sh
 ```
