@@ -78,6 +78,7 @@ sleep 3
 # Tables
 echo -e "$info\n[$q+$info] Configurations des tables et des redirections $warn"
 ifconfig lo up
+ifconfig at0 up &
 ifconfig at0 10.0.0.1 netmask 255.255.255.0
 ifconfig at0 mtu 1400
 route add -net 10.0.0.0 netmask 255.255.255.0 gw 10.0.0.1
