@@ -1,4 +1,3 @@
-![myHotspot](http://mtfo.fr/myhotspot.png)
 # myHotspot 1.4 - Par Nyzo
 *myhotspot.sh* créé de faux points d'accès wifi (hotspot), utilisant Airbase-ng et MITMf.
 ## Installation
@@ -150,8 +149,6 @@ Alors éxecutez la commande suivante :
 ```sh
 easy_install -U pip
 ```
-## À venir
-Wiki en cours de création.
 
 Plus d'infos sur [MITMf].
 
