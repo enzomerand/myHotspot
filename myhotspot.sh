@@ -1,9 +1,9 @@
 #!/bin/bash
-# Copyright (C) 2016 - Nyzo
+# Copyright (C) 2017 - Nyzo
 # myHotspot - version 1.4
 
 if [[ $EUID -ne 0 ]]; then
-  echo "Vous devez être en root (su root, recommandé) ou utiliser sudo" 2>&1
+  echo "Vous devez être en root ("su root" recommandé) ou utiliser sudo" 2>&1
   exit 1
 fi
 
@@ -147,39 +147,39 @@ fi
 
 # Nettoyage
 stop() {
-echo -e "$info\n[$q+$info] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux.$warn\n"
-kill ${airbaseid}
-echo -e "$info\n[$q✔$info] Airbase-ng (fake ap) stoppé $warn\n"
-kill ${dhcpdid}
-echo -e "$info[$q✔$info] DHCP stoppé $warn\n"
-kill ${mitmfid}
-echo -e "$info[$q✔$info] MITMf stoppé $warn"
-sleep 1
-echo "0" > /proc/sys/net/ipv4/ip_forward
-iptables -F
-iptables -F -t nat
-iptables --delete-chain
-iptables -t nat --delete-chain
-echo -e "$info[$q✔$info] iptables restaurée $txtrst\n"
-sleep 1
-airmon-ng stop $fakeap_interface
-airmon-ng stop $fakeap
-airmon-ng check kill
-sleep 2
-airmon-ng check kill
-echo -e "$info[$q✔$info] Airmon-ng stoppé $txtrst\n"
-sleep 1
-echo
-ifconfig $internet_interface up
-service network-manager restart
-/etc/init.d/isc-dhcp-server stop
-echo -e "$info\n[$q✔$info] Redémarrage du système internet"
-echo -e "[$q✔$info] Nettoyage et restauration terminé !"
-echo -e "[$q+$info] Merci d'utiliser myHotspot et à bientôt !"
-echo -e -n "\e[0m" #Réinitialisation du texte
-sleep 3
-clear
-exit 0
+  echo -e "$info\n[$q+$info] Arrêt des processus et réinitialisation des protocoles, interfaces et réseaux.$warn\n"
+  kill ${airbaseid}
+  echo -e "$info\n[$q✔$info] Airbase-ng (fake ap) stoppé $warn\n"
+  kill ${dhcpdid}
+  echo -e "$info[$q✔$info] DHCP stoppé $warn\n"
+  kill ${mitmfid}
+  echo -e "$info[$q✔$info] MITMf stoppé $warn"
+  sleep 1
+  echo "0" > /proc/sys/net/ipv4/ip_forward
+  iptables -F
+  iptables -F -t nat
+  iptables --delete-chain
+  iptables -t nat --delete-chain
+  echo -e "$info[$q✔$info] iptables restaurée $txtrst\n"
+  sleep 1
+  airmon-ng stop $fakeap_interface
+  airmon-ng stop $fakeap
+  airmon-ng check kill
+  sleep 2
+  airmon-ng check kill
+  echo -e "$info[$q✔$info] Airmon-ng stoppé $txtrst\n"
+  sleep 1
+  echo
+  ifconfig $internet_interface up
+  service network-manager restart
+  /etc/init.d/isc-dhcp-server stop
+  echo -e "$info\n[$q✔$info] Redémarrage du système internet"
+  echo -e "[$q✔$info] Nettoyage et restauration terminé !"
+  echo -e "[$q+$info] Merci d'utiliser myHotspot et à bientôt !"
+  echo -e -n "\e[0m" #Réinitialisation du texte
+  sleep 3
+  clear
+  exit 0
 }
 
 init $# $1
